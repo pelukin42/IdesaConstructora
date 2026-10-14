@@ -7,8 +7,9 @@ exportación de Instagram). No se conecta a ninguna red social.
 Uso (con -I para no cargar código de la carpeta de trabajo):
   python3 -I fotos.py inventario CARPETA_O_ARCHIVOS...
   python3 -I fotos.py recortar CAPTURA.png --out CARPETA [--cols 3]
-  python3 -I fotos.py ranking CARPETA_O_ARCHIVOS... [--top 20]
-  python3 -I fotos.py optimizar ARCHIVOS... --out img/obras [--ancho 1600] [--calidad 82]
+  python3 -I fotos.py ranking CARPETA_O_ARCHIVOS... [--top 20] [--con-capturas]
+  python3 -I fotos.py optimizar ARCHIVOS... --out img/obras [--ancho 1600] [--calidad 82] [--reemplazar]
+Las carpetas se recorren con sus subcarpetas.
 """
 import argparse
 import json
@@ -29,10 +30,12 @@ def listar(rutas):
     out = []
     for r in rutas:
         if os.path.isdir(r):
-            for n in sorted(os.listdir(r)):
-                p = os.path.join(r, n)
-                if os.path.isfile(p) and os.path.splitext(n)[1].lower() in EXT:
-                    out.append(p)
+            # recursivo: la exportación de Instagram guarda las fotos en carpetas anidadas
+            for raiz, dirs, nombres in os.walk(r):
+                dirs[:] = sorted(d for d in dirs if not d.startswith("."))
+                for n in sorted(nombres):
+                    if os.path.splitext(n)[1].lower() in EXT:
+                        out.append(os.path.join(raiz, n))
         elif os.path.isfile(r):
             out.append(r)
         else:
@@ -41,14 +44,25 @@ def listar(rutas):
 
 
 def abrir(ruta):
-    im = Image.open(ruta)
+    try:
+        im = Image.open(ruta)
+    except Exception as e:
+        if ruta.lower().endswith((".heic", ".heif")):
+            raise RuntimeError("HEIC no soportado aquí: exportar la foto a JPG o PNG") from e
+        raise
     im = ImageOps.exif_transpose(im)
+    if im.mode in ("RGBA", "LA") or (im.mode == "P" and "transparency" in im.info):
+        im = im.convert("RGBA")
+        fondo = Image.new("RGBA", im.size, (255, 255, 255, 255))
+        im = Image.alpha_composite(fondo, im)  # la transparencia se compone sobre blanco, no negro
     return im.convert("RGB")
 
 
 def gris(im, lado=900):
+    """Gris con el lado largo normalizado, para que la nitidez no dependa de la resolución."""
     g = im.convert("L")
-    g.thumbnail((lado, lado))
+    k = lado / max(g.size)
+    g = g.resize((max(3, round(g.width * k)), max(3, round(g.height * k))), Image.LANCZOS)
     return np.asarray(g, dtype=np.float64)
 
 
@@ -159,6 +173,22 @@ def cmd_recortar(args):
     return 0
 
 
+def fraccion_plana(im):
+    """Fracción de píxeles del color más frecuente: las capturas de pantalla tienen grandes zonas planas."""
+    t = im.copy(); t.thumbnail((200, 200))
+    q = (np.asarray(t, dtype=np.int32) // 16).reshape(-1, 3)
+    _, c = np.unique(q, axis=0, return_counts=True)
+    return float(c.max() / len(q))
+
+
+def parece_captura(im, cuadricula=None):
+    """Captura de pantalla (de un teléfono o del perfil) y no una foto de obra."""
+    asp = im.height / im.width
+    if cuadricula is None:
+        cuadricula = len(detectar_cuadricula(im))
+    return bool(cuadricula >= 6 or asp >= 1.9 or (asp >= 1.6 and fraccion_plana(im) >= .45))
+
+
 # ---------------------------------------------------------------- inventario
 def info(ruta):
     im = abrir(ruta)
@@ -172,7 +202,9 @@ def info(ruta):
         "brillo": round(float(g.mean()), 1),
         "contraste": round(float(g.std()), 1),
     }
-    d["posible_captura_de_perfil"] = bool(len(detectar_cuadricula(im)) >= 6)
+    cuad = len(detectar_cuadricula(im))
+    d["posible_captura_de_perfil"] = bool(cuad >= 6)
+    d["captura"] = parece_captura(im, cuad)
     avisos = []
     if min(im.size) < 800:
         avisos.append("baja resolución")
@@ -184,6 +216,8 @@ def info(ruta):
         avisos.append("muy clara")
     if d["posible_captura_de_perfil"]:
         avisos.append("parece cuadrícula de perfil: usar recortar")
+    elif d["captura"]:
+        avisos.append("parece captura de pantalla: no usar como foto de obra")
     d["avisos"] = avisos
     return d
 
@@ -199,6 +233,9 @@ def cmd_inventario(args):
             filas.append(info(r))
         except Exception as e:  # archivo dañado o formato no soportado
             print(f"AVISO: no se pudo leer {r}: {e}", file=sys.stderr)
+    if not filas:
+        print("No se pudo leer ninguna imagen.", file=sys.stderr)
+        return 1
     if args.json:
         print(json.dumps(filas, ensure_ascii=False, indent=1))
     else:
@@ -221,16 +258,26 @@ def puntaje(d):
 
 def cmd_ranking(args):
     rutas = listar(args.rutas)
-    items = []
+    if not rutas:
+        print("No hay imágenes en esas rutas (se buscan también en subcarpetas).", file=sys.stderr)
+        return 1
+    items, capturas = [], []
     for r in rutas:
         try:
             im = abrir(r)
             d = info(r)
+            if d["captura"] and not args.con_capturas:
+                capturas.append(r)  # capturas de pantalla: no compiten como fotos de obra
+                continue
             d["puntaje"] = puntaje(d)
             d["_h"] = dhash(im)
             items.append(d)
         except Exception as e:
             print(f"AVISO: no se pudo leer {r}: {e}", file=sys.stderr)
+    if not items:
+        print("Ninguna imagen sirve como foto de obra (todas parecen capturas o no se pudieron leer). "
+              "Usar recortar sobre las capturas del perfil, o --con-capturas.", file=sys.stderr)
+        return 1
     items.sort(key=lambda d: d["puntaje"], reverse=True)
     elegidas, dup = [], {}
     for d in items:
@@ -243,7 +290,7 @@ def cmd_ranking(args):
     for d in elegidas[: args.top]:
         d = {k: v for k, v in d.items() if k != "_h"}
         salida.append(d)
-    print(json.dumps({"mejores": salida, "duplicadas": dup}, ensure_ascii=False, indent=1))
+    print(json.dumps({"mejores": salida, "duplicadas": dup, "capturas_excluidas": capturas}, ensure_ascii=False, indent=1))
     print("\nEl puntaje solo mide técnica (nitidez, resolución, exposición). "
           "La elección final es visual: mirar las mejores y decidir qué obra muestra cada una.",
           file=sys.stderr)
@@ -269,7 +316,7 @@ def cmd_optimizar(args):
             im = im.resize((args.ancho, round(im.height * args.ancho / im.width)), Image.LANCZOS)
         base = slug(os.path.splitext(os.path.basename(r))[0])
         nombre, n = f"{base}.jpg", 2
-        while nombre in usados:
+        while nombre in usados and not args.reemplazar:
             nombre, n = f"{base}-{n}.jpg", n + 1
         usados.add(nombre)
         dest = os.path.join(args.out, nombre)
@@ -277,6 +324,9 @@ def cmd_optimizar(args):
         im.save(dest, "JPEG", quality=args.calidad, optimize=True, progressive=True)
         res.append({"origen": r, "archivo": dest, "ancho": im.width, "alto": im.height,
                     "peso_kb": round(os.path.getsize(dest) / 1024)})
+    if not res:
+        print("No se generó ninguna imagen.", file=sys.stderr)
+        return 1
     print(json.dumps(res, ensure_ascii=False, indent=1))
     return 0
 
@@ -301,6 +351,7 @@ def main():
     a.add_argument("rutas", nargs="+")
     a.add_argument("--top", type=int, default=20)
     a.add_argument("--dup", type=int, default=6, help="distancia máxima para considerar dos fotos iguales")
+    a.add_argument("--con-capturas", action="store_true", help="incluir en el ranking las capturas de pantalla")
     a.set_defaults(f=cmd_ranking)
 
     a = sp.add_parser("optimizar", help="JPG liviano, orientado y sin metadatos, listo para el sitio")
@@ -308,6 +359,7 @@ def main():
     a.add_argument("--out", required=True)
     a.add_argument("--ancho", type=int, default=1600)
     a.add_argument("--calidad", type=int, default=82)
+    a.add_argument("--reemplazar", action="store_true", help="sobrescribir si ya existe un archivo con el mismo nombre (si no, se agrega -2, -3...)")
     a.set_defaults(f=cmd_optimizar)
 
     args = p.parse_args()

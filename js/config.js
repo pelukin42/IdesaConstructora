@@ -23,8 +23,11 @@
 
     /* ---- Fotos ----
        fotos: la imagen principal de cada tipo de obra (órbita de la portada y tarjetas).
-       obras: la galería (cinta, mosaico y visor). Cada una con foto, zona, área y estado.
-       Mientras una foto sea null se muestra una tarjeta de marca. Ejemplo: casa: "img/casa.jpg" */
+       obras: la galería (carrusel 3D, mosaico y visor). Cada una con foto, zona, área y estado.
+       Opcional por obra: foco, el punto de la foto que no debe cortarse, por ejemplo foco: "50% 30%".
+       Mientras una foto sea null se muestra una tarjeta de marca y la maqueta 3D del tipo de obra.
+       Las rutas van relativas a la raíz del sitio: las fotos optimizadas quedan en img/obras/<nombre>.jpg
+       El orden importa en el mosaico: los lugares 1, 4 y 7 son horizontales, el 3 y el 9 verticales. */
     fotos: { casa: null, ampliacion: null, remodelacion: null, comercial: null, muros: null },
     obras: [
       { tipo: "casa", titulo: "Casa de habitación", foto: null, zona: null, area: null, estado: null },

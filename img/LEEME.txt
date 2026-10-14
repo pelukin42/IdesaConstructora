@@ -1,4 +1,6 @@
 Carpeta de imágenes de IDESA.
 Ya incluye el logo (logo.png, logo-blanco.png) y la marca vectorial (marca.svg, marca-blanco.svg).
-Para las fotos de obras: copiarlas aquí y anotar sus rutas en js/config.js (fotos y obras), por ejemplo "img/casa-1.jpg".
+Las fotos de obras van en img/obras/ (las genera .claude/skills/redes/scripts/fotos.py optimizar).
+Anotar sus rutas en js/config.js (fotos y obras), por ejemplo "img/obras/casa-dos-niveles.jpg".
+Los originales sin optimizar no se dejan aquí: pueden traer ubicación GPS y no se publican.
 Recomendado: JPG de unos 1600 px de ancho.

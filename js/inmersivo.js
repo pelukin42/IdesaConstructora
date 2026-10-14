@@ -400,7 +400,9 @@
   /* ============================================================
      VISOR DE OBRA
      ============================================================ */
-  var OBRAS = (N.obras || []).map(function (o) { return { tipo: o.tipo, titulo: o.titulo, foto: N.ruta(o.foto), zona: o.zona, area: o.area, estado: o.estado }; });
+  var OBRAS = (N.obras || []).map(function (o) { return { tipo: o.tipo, titulo: o.titulo, foto: N.ruta(o.foto), foco: o.foco || null, zona: o.zona, area: o.area, estado: o.estado }; });
+  var enfoque = function (o) { return o.foco ? ' style="object-position:' + esc(o.foco) + '"' : ""; };
+  if (OBRAS.length && OBRAS.every(function (o) { return o.foto; })) $$("#obras .demo-note").forEach(function (el) { el.hidden = true; });
   var ov = $("#ov"), ovBox = ov && $(".box", ov), OV = { i: 0, mq: null, tab: "foto", listo: false };
 
   function armarOv() {
@@ -441,7 +443,7 @@
   function pintarFoto(o, t) {
     var p = $("#ovFoto");
     if (!o.foto) { p.innerHTML = ""; return; }
-    p.innerHTML = '<div class="ovp"><div class="ovp-card"><div class="ovp-shadow"></div><div class="ovp-frame" style="--g:var(' + t.g + ')"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '"></div>' +
+    p.innerHTML = '<div class="ovp"><div class="ovp-card"><div class="ovp-shadow"></div><div class="ovp-frame" style="--g:var(' + t.g + ')"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '"' + enfoque(o) + '></div>' +
       '<span class="ovp-chip c1">' + U.icono(t.k) + esc(t.n) + "</span>" +
       '<span class="ovp-chip c2">' + ico("cubo") + "Mirá la maqueta 3D</span></div></div>";
     var wrap = $(".ovp", p), card = $(".ovp-card", p);
@@ -550,7 +552,7 @@
       b.type = "button"; b.setAttribute("data-obra", x.i); b.setAttribute("aria-label", o.titulo + ". Abrir en 3D");
       b.className = "rc tile " + (foto ? "photo" : "hue");
       if (!foto) b.style.setProperty("--g", "var(--g" + (x.i % 5 + 1) + ")");
-      b.innerHTML = (foto ? '<img src="' + esc(foto) + '" alt="" loading="lazy">' : U.icono(t.k)) +
+      b.innerHTML = (foto ? '<img src="' + esc(foto) + '" alt="" loading="lazy"' + enfoque(o) + '>' : U.icono(t.k)) +
         '<span class="b3d">' + ico("cubo") + "3D</span>" +
         '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span>";
       spin.appendChild(b); cards.push(b);

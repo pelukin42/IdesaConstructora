@@ -33,7 +33,8 @@
   var MARQ = ["Casas nuevas", "Ampliaciones", "Remodelaciones", "Locales y bodegas", "Muros y obra exterior", "Planos y diseño", "Permisos y trámites"];
   var ETAPAS = ["Consulta", "Presupuesto", "Planos y permisos", "Construcción", "Entrega"];
   var fotoTipo = function (k) { return N.ruta(N.fotos && N.fotos[k]); };
-  var OBRAS = (N.obras || []).map(function (o) { return { tipo: o.tipo, titulo: o.titulo, foto: N.ruta(o.foto), zona: o.zona, area: o.area, estado: o.estado }; });
+  var OBRAS = (N.obras || []).map(function (o) { return { tipo: o.tipo, titulo: o.titulo, foto: N.ruta(o.foto), foco: o.foco || null, zona: o.zona, area: o.area, estado: o.estado }; });
+  var enfoque = function (o) { return o.foco ? ' style="object-position:' + esc(o.foco) + '"' : ""; };
   var icono = function (k) { return '<svg class="ic"><use href="#i-' + (k === "otro" ? "doc" : k) + '"/></svg>'; };
 
   /* ============ datos del negocio en la página ============ */
@@ -150,7 +151,7 @@
   /* ============ cinta de obras ============ */
   function tileObra(o, i, clase) {
     var t = BYK[o.tipo] || OTRO;
-    if (o.foto) return '<button class="rib tile photo ' + (clase || "") + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
+    if (o.foto) return '<button class="rib tile photo ' + (clase || "") + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"' + enfoque(o) + '><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
     return '<button class="rib tile hue ' + (clase || "") + '" type="button" data-obra="' + i + '" style="--g:var(--g' + (i % 5 + 1) + ');animation-delay:' + (-i * 1.3) + 's" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
   }
   (function () {
@@ -189,7 +190,7 @@
   var FORMAS = ["big", "", "tall", "wide", "", "", "wide", "", "tall", ""];
   $("#gallery").innerHTML = OBRAS.map(function (o, i) {
     var t = BYK[o.tipo] || OTRO, forma = FORMAS[i % FORMAS.length];
-    if (o.foto) return '<button class="shot tile photo ' + forma + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
+    if (o.foto) return '<button class="shot tile photo ' + forma + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"' + enfoque(o) + '><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
     return '<button class="shot tile hue ' + forma + '" type="button" data-obra="' + i + '" style="--g:var(--g' + ((i + 2) % 5 + 1) + ')" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
   }).join("");
 
