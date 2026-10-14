@@ -46,7 +46,8 @@ Adaptar los tipos de obra del cliente en `TIPOS` (app.js) y en `BUILD` (inmersiv
 - Confirmar que el número tenga WhatsApp y pedir el enlace exacto de Facebook (hasta entonces es una búsqueda).
 
 ## 5. Fotos de sus redes
-**Nunca se abren Instagram ni Facebook**: ni con navegador, Playwright, curl o WebFetch, ni con sesión, cookies, APIs no oficiales, espejos o descargadores. Si la persona pega un enlace de una red, no se abre: se le piden capturas del perfil o las fotos.
+**No se sacan fotos de Instagram ni de Facebook por la fuerza**: sin sesión, cookies, APIs no oficiales, espejos, descargadores ni cambio de User-Agent. Si la persona pide mirar el perfil público, se hace una sola visita simple y,
+si hay pantalla de inicio de sesión, error 429 u otro bloqueo, se detiene ahí y se piden capturas o las fotos.
 Se trabaja con lo que la persona aporte (fotos originales del teléfono o la computadora, capturas del perfil adjuntas en el chat, una carpeta compartida, o la descarga de su información de Instagram con solo las publicaciones)
 siguiendo `.claude/skills/redes/SKILL.md`: recortar, elegir, **revisar privacidad por zonas** (placas, números de casa o medidor, rótulos con nombre del propietario, rostros, documentos), optimizar sin metadatos GPS y conectar en `js/config.js` (`fotos` y `obras`).
 El repositorio puede ser público: se agrega solo `img/obras` y `js/config.js`, nunca `git add -A`.

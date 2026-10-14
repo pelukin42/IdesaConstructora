@@ -1,18 +1,19 @@
 ---
 name: redes
-description: Convierte las fotos y capturas que la persona aporta del Instagram o Facebook de Constructora IDESA en fotos listas para el sitio. Recorta las miniaturas de una captura del perfil, elige las mejores, revisa la privacidad, quita la ubicación GPS, las conecta en js/config.js y vuelve a publicar el sitio. Nunca inicia sesión ni abre las redes. Usar con /redes o cuando pidan poner en el sitio las fotos del Instagram o de las redes, mostrar los mejores trabajos, usar fotos reales de obras o llenar la galería, y cuando adjunten capturas del perfil o fotos de obras de IDESA.
+description: Convierte las fotos y capturas que la persona aporta del Instagram o Facebook de Constructora IDESA en fotos listas para el sitio. Recorta las miniaturas de una captura del perfil, elige las mejores, revisa la privacidad, quita la ubicación GPS, las conecta en js/config.js y vuelve a publicar el sitio. Nunca inicia sesión ni esquiva los bloqueos de las redes. Usar con /redes o cuando pidan poner en el sitio las fotos del Instagram o de las redes, mostrar los mejores trabajos, usar fotos reales de obras o llenar la galería, y cuando adjunten capturas del perfil o fotos de obras de IDESA.
 ---
 
 # /redes: del perfil de Instagram a las fotos del sitio
 
 Propósito: que el sitio de IDESA muestre sus mejores trabajos reales. Este flujo parte de
-imágenes que la persona ya tiene y entrega ella misma. Las redes sociales no se tocan.
+imágenes que la persona ya tiene y entrega ella misma. Si las redes bloquean el acceso, no se insiste.
 
 ## Reglas que no cambian
-- **No entrar a Instagram ni a Facebook.** No abrir sus páginas con navegador, Playwright, curl ni WebFetch; no iniciar sesión;
-  no pedir ni aceptar contraseñas, códigos, cookies ni tokens (si la persona los ofrece, decirle que no hacen falta);
-  no usar APIs no oficiales, enlaces de incrustación (`/embed`), espejos ni descargadores de terceros; no cambiar el User-Agent.
-  Si la persona pega un enlace de instagram.com o facebook.com, no se abre: se le piden capturas o las fotos.
+- **No sacar fotos de Instagram ni de Facebook por la fuerza.** No iniciar sesión; no pedir ni aceptar contraseñas, códigos, cookies ni tokens
+  (si la persona los ofrece, decirle que no hacen falta); no usar APIs no oficiales, enlaces de incrustación (`/embed`), espejos ni descargadores de terceros;
+  no cambiar el User-Agent ni reintentar para esquivar un bloqueo. Si la persona pide expresamente mirar el perfil público, se hace **una sola visita simple**
+  (WebFetch o navegador, sin sesión y sin trucos). Si responde con pantalla de inicio de sesión, error 429 u otro bloqueo, se detiene ahí, se le dice a la persona
+  y se piden capturas o las fotos. Si la persona pega un enlace de una publicación, se aplica lo mismo.
 - Usar solo fotos de obras de IDESA que la persona entregue. Si se ve una fotografía que no es de IDESA, no se publica.
 - **Privacidad antes de publicar** (paso 5). El repositorio es público: lo que se sube no se puede retirar del historial.
 - No inventar datos: zona, área, año y estado de cada obra quedan en `null` hasta que la persona los confirme.
