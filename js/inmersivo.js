@@ -288,8 +288,8 @@
         ui.appendChild(b); return b;
       }
       var bEx = boton(cfg.ex, "explotar", "keep pulse"); bEx.setAttribute("aria-pressed", "false");
-      var bNi = boton("Noche", "luna"); bNi.setAttribute("aria-pressed", "false");
-      var bAu = boton("Girar solo", "girar"); bAu.setAttribute("aria-pressed", reduce || o.auto === false ? "false" : "true");
+      var bNi = boton("Noche", "luna", "", "Modo noche"); bNi.setAttribute("aria-pressed", "false");
+      var bAu = boton("Girar solo", "girar", "", "Girar solo"); bAu.setAttribute("aria-pressed", reduce || o.auto === false ? "false" : "true");
       var sp = div("mq-sp", ui);
       var bMe = boton("", "menos", "ico", "Alejar"), bMa = boton("", "mas", "ico", "Acercar"), bRe = boton("", "girar", "ico", "Volver a la vista inicial");
       if (o.onFoto) { var bFo = boton("Ver foto", "foto", "keep"); bFo.addEventListener("click", o.onFoto); ui.insertBefore(bFo, sp); }
@@ -297,7 +297,9 @@
       host.setAttribute("aria-label", "Maqueta 3D. Arrastrá para girar; con el teclado, las flechas giran y más y menos acercan.");
 
       var S = { yaw: -34, pitch: 24, zoom: 1, ze: 1, vy: 0, auto: !reduce && o.auto !== false, base: 1, intro: reduce ? 1 : 0 }, I = { yaw: -34, pitch: 24 };
-      var raf = 0, last = 0, idle = 0, visible = true, drag = null, ptrs = {}, pinch = 0, vivo = true;
+      var raf = 0, last = 0, idle = 0, visible = true, drag = null, ptrs = {}, pinch = 0, vivo = true, offs = [];
+      /* el host se reutiliza entre aperturas: todo listener puesto en él se quita en destruir() */
+      function on(t, ev, fn, opt) { t.addEventListener(ev, fn, opt); offs.push(function () { t.removeEventListener(ev, fn, opt); }); }
       function ajustar() {
         var w = host.clientWidth || 600, h = host.clientHeight || 420;
         S.base = clamp(Math.min(.62 * w / cfg.span, .56 * h / cfg.alto), .3, 1.5);
@@ -310,7 +312,7 @@
         raf = 0; if (!vivo) return;
         var dt = Math.min(48, t - last || 16); last = t;
         if (S.intro < 1) S.intro = Math.min(1, S.intro + dt / 1100);
-        var zt = host.classList.contains("ex") ? cfg.zex : 1; S.ze += (zt - S.ze) * Math.min(1, dt * .004);
+        var zt = host.classList.contains("ex") ? cfg.zex : 1; S.ze += (zt - S.ze) * (reduce ? 1 : Math.min(1, dt * .004));
         if (!drag) {
           if (Math.abs(S.vy) > .0005) { S.yaw += S.vy * dt; S.vy *= Math.pow(.93, dt / 16); }
           idle = Math.max(0, idle - dt);
@@ -328,8 +330,9 @@
       if (io) io.observe(host);
       ajustar(); pintar(); arrancar();
 
-      host.addEventListener("pointerdown", function (e) {
+      on(host, "pointerdown", function (e) {
         if (e.target.closest(".mq-ui")) return;
+        if (e.pointerType === "mouse" && e.button !== 0) return; /* el menú contextual se traga el pointerup y deja el arrastre pegado */
         ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
         var n = Object.keys(ptrs).length;
         if (n === 1) { drag = { x: e.clientX, y: e.clientY, t: e.timeStamp }; S.vy = 0; host.classList.add("drag"); }
@@ -337,7 +340,7 @@
         try { host.setPointerCapture(e.pointerId); } catch (x) {}
         usado(); arrancar();
       });
-      host.addEventListener("pointermove", function (e) {
+      on(host, "pointermove", function (e) {
         var p = ptrs[e.pointerId]; if (!p) return;
         var n = Object.keys(ptrs).length;
         if (n >= 2) {
@@ -355,12 +358,12 @@
         delete ptrs[e.pointerId]; pinch = 0;
         if (!Object.keys(ptrs).length) { drag = null; host.classList.remove("drag"); idle = 2600; arrancar(); }
       }
-      host.addEventListener("pointerup", soltar); host.addEventListener("pointercancel", soltar);
-      host.addEventListener("wheel", function (e) {
+      on(host, "pointerup", soltar); on(host, "pointercancel", soltar);
+      on(host, "wheel", function (e) {
         if (!(e.ctrlKey || e.metaKey)) return;
         e.preventDefault(); S.zoom = clamp(S.zoom * (e.deltaY < 0 ? 1.06 : .94), .5, 2.2); usado(); pintar();
       }, { passive: false });
-      host.addEventListener("keydown", function (e) {
+      on(host, "keydown", function (e) {
         var k = e.key, c = true;
         if (k === "ArrowLeft") S.yaw -= 8; else if (k === "ArrowRight") S.yaw += 8;
         else if (k === "ArrowUp") S.pitch = clamp(S.pitch - 5, 6, 80); else if (k === "ArrowDown") S.pitch = clamp(S.pitch + 5, 6, 80);
@@ -387,9 +390,12 @@
 
       return {
         destruir: function () {
+          if (!vivo) return;
           vivo = false; if (raf) cancelAnimationFrame(raf); raf = 0;
           if (ro) ro.disconnect(); if (io) io.disconnect();
           document.removeEventListener("visibilitychange", onVis);
+          Object.keys(ptrs).forEach(function (k) { try { host.releasePointerCapture(+k); } catch (x) {} });
+          offs.forEach(function (f) { f(); }); offs = [];
           host.innerHTML = ""; host.classList.remove("mq", "ex", "night", "used", "drag");
           ["tabindex", "role", "aria-label"].forEach(function (a) { host.removeAttribute(a); });
         }
@@ -502,6 +508,8 @@
     var t = e.target.closest("[data-obra]");
     if (t) abrirObra(+t.getAttribute("data-obra"));
   });
+  /* con fotos, arrastrar la imagen lanzaba el arrastre nativo del navegador y cancelaba el gesto (pointercancel) */
+  document.addEventListener("dragstart", function (e) { if (e.target.closest && e.target.closest(".r3d-stage, #ov")) e.preventDefault(); });
   document.addEventListener("idesa:cerrar", function (e) {
     var m = e.detail;
     if (m === ov && OV.mq) { OV.mq.destruir(); OV.mq = null; }
@@ -548,13 +556,14 @@
     sec.insertBefore(wrap, rib); sec.classList.add("ring-on");
     var stage = $(".r3d-stage", wrap), spin = $(".r3d-spin", wrap), cards = [];
     lista.forEach(function (x, j) {
-      var o = x.o, t = U.BYK[o.tipo] || U.OTRO, foto = N.ruta(o.foto), b = document.createElement("button");
+      var o = x.o, t = U.BYK[o.tipo] || U.OTRO, foto = o.foto, b = document.createElement("button");
       b.type = "button"; b.setAttribute("data-obra", x.i); b.setAttribute("aria-label", o.titulo + ". Abrir en 3D");
       b.className = "rc tile " + (foto ? "photo" : "hue");
       if (!foto) b.style.setProperty("--g", "var(--g" + (x.i % 5 + 1) + ")");
       b.innerHTML = (foto ? '<img src="' + esc(foto) + '" alt="" loading="lazy"' + enfoque(o) + '>' : U.icono(t.k)) +
         '<span class="b3d">' + ico("cubo") + "3D</span>" +
         '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span>";
+      if (j >= OBRAS.length) { b.tabIndex = -1; b.setAttribute("aria-hidden", "true"); } /* copias que solo rellenan el anillo: no repetir paradas de Tab */
       spin.appendChild(b); cards.push(b);
       b.addEventListener("focus", function () { ir(j); });
     });
@@ -591,9 +600,12 @@
         rot -= clamp(ds, -80, 80) * .06;
       }
       pintar();
-      if (vis) raf = requestAnimationFrame(bucle);
+      if (vis && !tapado()) raf = requestAnimationFrame(bucle);
     }
-    function arrancar() { if (!raf && vis) { last = 0; lastY = scrollY; raf = requestAnimationFrame(bucle); } }
+    /* con una ventana abierta el carrusel queda tapado: no gastar cuadros girándolo detrás */
+    function tapado() { return !!$(".modal.on"); }
+    function arrancar() { if (!raf && vis && !tapado()) { last = 0; lastY = scrollY; raf = requestAnimationFrame(bucle); } }
+    document.addEventListener("idesa:cerrar", arrancar);
     function ir(j) { var k = Math.round((rot + j * paso) / 360); tgt = -j * paso + 360 * k; vel = 0; idle = 4000; arrancar(); }
     function mover(d) { tgt = Math.round(rot / paso) * paso + d * paso; vel = 0; idle = 4000; wrap.classList.add("used"); arrancar(); }
     $$(".r3d-btn", wrap).forEach(function (b) { b.addEventListener("click", function () { mover(+b.getAttribute("data-d")); }); });
@@ -601,6 +613,7 @@
       if (e.key === "ArrowLeft") { e.preventDefault(); mover(1); } else if (e.key === "ArrowRight") { e.preventDefault(); mover(-1); }
     });
     stage.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return; /* el menú contextual se traga el pointerup y dejaba el anillo pegado al puntero */
       suprimir = false; drag = { x: e.clientX, y: e.clientY, rot: rot, t: e.timeStamp, on: false, id: e.pointerId };
     });
     stage.addEventListener("pointermove", function (e) {

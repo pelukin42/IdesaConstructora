@@ -27,7 +27,8 @@
        Opcional por obra: foco, el punto de la foto que no debe cortarse, por ejemplo foco: "50% 30%".
        Mientras una foto sea null se muestra una tarjeta de marca y la maqueta 3D del tipo de obra.
        Las rutas van relativas a la raíz del sitio: las fotos optimizadas quedan en img/obras/<nombre>.jpg
-       El orden importa en el mosaico: los lugares 1, 4 y 7 son horizontales, el 3 y el 9 verticales. */
+       El orden importa en el mosaico: el lugar 1 es 4:3 en escritorio y casi cuadrado en móvil; el 4 y el 7 son
+       panorámicos (2,7:1 en escritorio); el 3 y el 9 son verticales; los demás son 4:3. */
     fotos: { casa: null, ampliacion: null, remodelacion: null, comercial: null, muros: null },
     obras: [
       { tipo: "casa", titulo: "Casa de habitación", foto: null, zona: null, area: null, estado: null },
@@ -52,6 +53,6 @@
     obrasEntregadas: null,
 
     /* convierte una ruta relativa a la raíz del sitio en una ruta que funciona desde cualquier página */
-    ruta: function (p) { return p ? (/^(https?:|data:|\/)/.test(p) ? p : base + p) : null; }
+    ruta: function (p) { return p ? (/^([a-z][a-z0-9+.\-]*:|\/)/i.test(p) ? p : base + p) : null; }
   };
 })();

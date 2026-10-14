@@ -8,6 +8,7 @@ Uso (con -I para no cargar código de la carpeta de trabajo):
   python3 -I fotos.py inventario CARPETA_O_ARCHIVOS...
   python3 -I fotos.py recortar CAPTURA.png --out CARPETA [--cols 3]
   python3 -I fotos.py ranking CARPETA_O_ARCHIVOS... [--top 20] [--con-capturas]
+  python3 -I fotos.py revisar CARPETA_O_ARCHIVOS... --out CARPETA [--lado 800]
   python3 -I fotos.py optimizar ARCHIVOS... --out img/obras [--ancho 1600] [--calidad 82] [--reemplazar]
 Las carpetas se recorren con sus subcarpetas.
 """
@@ -122,7 +123,11 @@ def detectar_cuadricula(im, cols=3, min_lado=80, tol=14):
     bg = _fondo(a)
     es_fondo = (np.abs(a - bg).max(axis=2) <= tol)
     # 1) columnas: se miden solo en las filas que no son casi todo fondo
-    filas_foto = es_fondo.mean(axis=1) < 0.5
+    # primero las filas densas (casi todo el ancho es foto): así los botones y textos de la cabecera
+    # no ensucian la medida de las columnas; si no hay suficientes, se usa el criterio amplio
+    filas_foto = es_fondo.mean(axis=1) <= 0.1
+    if filas_foto.sum() < min_lado:
+        filas_foto = es_fondo.mean(axis=1) < 0.5
     if filas_foto.sum() < min_lado:
         return []
     col_fondo = es_fondo[filas_foto].mean(axis=0)
@@ -141,9 +146,28 @@ def detectar_cuadricula(im, cols=3, min_lado=80, tol=14):
     tramos_y = _tramos(fila_fondo < 0.9, min_lado)
     if not tramos_y:
         return []
-    # miniaturas de la misma altura que la más repetida (la cabecera queda fuera)
-    alto_ref = np.median([f - i for i, f in tramos_y if f - i <= 1.6 * (tramos_x[0][1] - tramos_x[0][0])] or [0])
-    tramos_y = [t for t in tramos_y if alto_ref and abs((t[1] - t[0]) - alto_ref) <= 0.12 * alto_ref]
+    # Las filas de una cuadrícula van pegadas, separadas por la misma brecha que las columnas;
+    # la cabecera (avatar, historias, botones) no cumple eso. Se toma la cadena más larga de
+    # tramos consecutivos y se descartan las filas cortadas arriba o abajo por el borde de la captura.
+    brecha = max(0, tramos_x[1][0] - tramos_x[0][1])
+    cadenas, actual = [], [tramos_y[0]]
+    for t in tramos_y[1:]:
+        if abs((t[0] - actual[-1][1]) - brecha) <= 3:
+            actual.append(t)
+        else:
+            cadenas.append(actual)
+            actual = [t]
+    cadenas.append(actual)
+    ancho = tramos_x[0][1] - tramos_x[0][0]
+    mejor = []
+    for c in cadenas:
+        ref = max(f - i for i, f in c)
+        if not 0.6 * ancho <= ref <= 1.6 * ancho:
+            continue
+        completas = [t for t in c if (t[1] - t[0]) >= ref - 3]
+        if len(completas) > len(mejor):
+            mejor = completas
+    tramos_y = mejor
     cajas = []
     for (y0, y1) in tramos_y:
         for (x0, x1) in tramos_x:
@@ -182,11 +206,20 @@ def fraccion_plana(im):
 
 
 def parece_captura(im, cuadricula=None):
-    """Captura de pantalla (de un teléfono o del perfil) y no una foto de obra."""
+    """Captura de pantalla (de un teléfono o del perfil) y no una foto de obra.
+
+    Solo se decide sola cuando es claro: cuadrícula de perfil o proporción de teléfono (2:1 o más).
+    Una foto vertical 9:16 con cielo o pared lisa se deja pasar: es común en historias y reels."""
     asp = im.height / im.width
     if cuadricula is None:
         cuadricula = len(detectar_cuadricula(im))
-    return bool(cuadricula >= 6 or asp >= 1.9 or (asp >= 1.6 and fraccion_plana(im) >= .45))
+    return bool(cuadricula >= 6 or asp >= 1.9)
+
+
+def dudosa_captura(im):
+    """Vertical con grandes zonas planas: puede ser una captura, pero también una foto de obra con cielo."""
+    asp = im.height / im.width
+    return bool(1.6 <= asp < 1.9 and fraccion_plana(im) >= .45)
 
 
 # ---------------------------------------------------------------- inventario
@@ -205,6 +238,7 @@ def info(ruta):
     cuad = len(detectar_cuadricula(im))
     d["posible_captura_de_perfil"] = bool(cuad >= 6)
     d["captura"] = parece_captura(im, cuad)
+    d["dudosa"] = dudosa_captura(im)
     avisos = []
     if min(im.size) < 800:
         avisos.append("baja resolución")
@@ -218,6 +252,8 @@ def info(ruta):
         avisos.append("parece cuadrícula de perfil: usar recortar")
     elif d["captura"]:
         avisos.append("parece captura de pantalla: no usar como foto de obra")
+    elif d["dudosa"]:
+        avisos.append("revisar: vertical con zonas lisas, puede ser captura o foto con cielo")
     d["avisos"] = avisos
     return d
 
@@ -331,6 +367,34 @@ def cmd_optimizar(args):
     return 0
 
 
+# ---------------------------------------------------------------- revisar
+def cmd_revisar(args):
+    """Parte cada foto en recuadros al tamaño real para leer placas, números de casa, rótulos y rostros."""
+    rutas = listar(args.rutas)
+    if not rutas:
+        print("No hay imágenes.", file=sys.stderr)
+        return 1
+    os.makedirs(args.out, exist_ok=True)
+    for r in rutas:
+        try:
+            im = abrir(r)
+        except Exception as e:
+            print(f"AVISO: no se pudo leer {r}: {e}", file=sys.stderr)
+            continue
+        base = slug(os.path.splitext(os.path.basename(r))[0])
+        lado = args.lado
+        nx, ny = max(1, -(-im.width // lado)), max(1, -(-im.height // lado))
+        for j in range(ny):
+            for i in range(nx):
+                x0, y0 = min(i * lado, max(0, im.width - lado)), min(j * lado, max(0, im.height - lado))
+                im.crop((x0, y0, min(im.width, x0 + lado), min(im.height, y0 + lado))).save(
+                    os.path.join(args.out, f"{base}-r{j + 1}{i + 1}.png"))
+        print(f"{r}: {nx * ny} recuadros de {lado} px en {args.out}")
+    print("Abrir cada recuadro con Read. Si se lee una placa, un número de casa o de medidor, un rótulo con nombre "
+          "o se ve un rostro: recortar o descartar la foto.")
+    return 0
+
+
 # ---------------------------------------------------------------- principal
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -353,6 +417,12 @@ def main():
     a.add_argument("--dup", type=int, default=6, help="distancia máxima para considerar dos fotos iguales")
     a.add_argument("--con-capturas", action="store_true", help="incluir en el ranking las capturas de pantalla")
     a.set_defaults(f=cmd_ranking)
+
+    a = sp.add_parser("revisar", help="parte las fotos en recuadros al tamaño real para la revisión de privacidad")
+    a.add_argument("rutas", nargs="+")
+    a.add_argument("--out", required=True)
+    a.add_argument("--lado", type=int, default=800)
+    a.set_defaults(f=cmd_revisar)
 
     a = sp.add_parser("optimizar", help="JPG liviano, orientado y sin metadatos, listo para el sitio")
     a.add_argument("rutas", nargs="+")

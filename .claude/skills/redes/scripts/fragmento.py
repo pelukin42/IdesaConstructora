@@ -6,7 +6,8 @@
 Quita doctype/html/head/body, conserva el <title>, las fuentes y la hoja de estilos, y escribe
 en la salida el contenido del <body>. Imprime en JSON el mapa `files` para la herramienta Artifact
 (css, js y las imágenes que el sitio usa, incluidas las fotos nuevas). Avisa por stderr de archivos
-sobrantes, de más de 15 MB, de más de 64 MB en total y de JPG con ubicación GPS.
+sobrantes y termina con código 1 (no publicar) si hay archivos de más de 15 MB, más de 64 MB en total,
+más de 255 archivos o JPG con ubicación GPS.
 """
 import json
 import os
@@ -59,21 +60,26 @@ def main():
                 sobrantes.append(rel)
     if sobrantes:
         print("AVISO: no se publican (nadie los usa): " + ", ".join(sorted(sobrantes)), file=sys.stderr)
-    total = 0
+    total, bloquea = 0, False
+    if len(files) > 255:
+        print(f"AVISO: {len(files)} archivos superan los 255 de una publicación", file=sys.stderr); bloquea = True
     for rel in sorted(files):
         ruta = os.path.join(raiz, rel); peso = os.path.getsize(ruta); total += peso
         if peso > 15 * 1024 * 1024:
-            print(f"AVISO: {rel} pesa {peso / 1048576:.1f} MB y supera el límite de 15 MB por archivo", file=sys.stderr)
+            print(f"AVISO: {rel} pesa {peso / 1048576:.1f} MB y supera el límite de 15 MB por archivo", file=sys.stderr); bloquea = True
         if rel.lower().endswith((".jpg", ".jpeg")):
             try:
                 from PIL import Image
                 if 34853 in (Image.open(ruta).getexif() or {}):
-                    print(f"AVISO: {rel} conserva ubicación GPS; pasarla por fotos.py optimizar", file=sys.stderr)
+                    print(f"AVISO: {rel} conserva ubicación GPS; pasarla por fotos.py optimizar", file=sys.stderr); bloquea = True
             except Exception:
                 pass
     if total > 64 * 1024 * 1024:
-        print(f"AVISO: el total pesa {total / 1048576:.1f} MB y supera los 64 MB de una publicación", file=sys.stderr)
+        print(f"AVISO: el total pesa {total / 1048576:.1f} MB y supera los 64 MB de una publicación", file=sys.stderr); bloquea = True
     print(json.dumps(files, ensure_ascii=False, indent=1))
+    if bloquea:
+        print("NO PUBLICAR: corregir los avisos y repetir.", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

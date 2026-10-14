@@ -46,9 +46,10 @@ Adaptar los tipos de obra del cliente en `TIPOS` (app.js) y en `BUILD` (inmersiv
 - Confirmar que el número tenga WhatsApp y pedir el enlace exacto de Facebook (hasta entonces es una búsqueda).
 
 ## 5. Fotos de sus redes
-Instagram y Facebook piden iniciar sesión, por eso **nunca** se intenta entrar, se piden contraseñas ni se esquiva el muro de acceso.
-Se trabaja con lo que la persona aporte (capturas del perfil adjuntas en el chat, descarga de su información de Instagram, fotos subidas a `img/`)
-siguiendo el flujo de `.claude/skills/redes/SKILL.md`: recortar, elegir, optimizar (sin metadatos GPS), revisar privacidad (placas, rostros, direcciones) y conectar en `js/config.js` (`fotos` y `obras`).
+**Nunca se abren Instagram ni Facebook**: ni con navegador, Playwright, curl o WebFetch, ni con sesión, cookies, APIs no oficiales, espejos o descargadores. Si la persona pega un enlace de una red, no se abre: se le piden capturas del perfil o las fotos.
+Se trabaja con lo que la persona aporte (fotos originales del teléfono o la computadora, capturas del perfil adjuntas en el chat, una carpeta compartida, o la descarga de su información de Instagram con solo las publicaciones)
+siguiendo `.claude/skills/redes/SKILL.md`: recortar, elegir, **revisar privacidad por zonas** (placas, números de casa o medidor, rótulos con nombre del propietario, rostros, documentos), optimizar sin metadatos GPS y conectar en `js/config.js` (`fotos` y `obras`).
+El repositorio puede ser público: se agrega solo `img/obras` y `js/config.js`, nunca `git add -A`.
 
 ## 6. Control de calidad antes de publicar
 Playwright con Chromium (`/opt/pw-browsers`, sin `playwright install`), páginas con `sessionStorage idesa_intro=1` para saltar la intro:
@@ -63,7 +64,7 @@ Errores ya vistos: el relleno de `section` global agranda las secciones internas
 pisan a las de móvil; el nombre de variable `--g` choca entre tarjetas y caras 3D (usar prefijos); `.qv-vis` pierde `position:relative` si otra clase lo fuerza a `absolute`.
 
 ## 7. Publicar y entregar
-1. `python3 -I .claude/skills/redes/scripts/fragmento.py . RUTA/sitio.html` genera el fragmento y el mapa `files` (css, js e imágenes).
+1. `python3 -I .claude/skills/redes/scripts/fragmento.py . RUTA/sitio.html` genera el fragmento y el mapa `files` (css, js y solo las imágenes que el sitio usa). Si avisa de GPS o de pesos, no publicar.
 2. Publicar con la herramienta Artifact (primera vez con ícono `building`; para actualizar, la misma ruta o la URL) y pasar `root` en la raíz del sitio.
 3. Commit con los trailers de atribución de la sesión y push a la rama de desarrollo. A `main` solo si lo piden. No abrir pull request sin que lo pidan.
 4. Responder con: el enlace, lo que quedó pendiente (datos y fotos), y la petición de las mejores fotos del Instagram para conectarlas.
