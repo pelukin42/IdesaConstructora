@@ -26,6 +26,9 @@
       "i-mas": '<path d="M12 5v14M5 12h14"/>',
       "i-menos": '<path d="M5 12h14"/>',
       "i-foto": '<rect x="3.5" y="5" width="17" height="14" rx="2.5"/><circle cx="9" cy="10.5" r="1.7"/><path d="m4 17 5-4.5 3.5 3L16 12l4 4"/>',
+      "i-pausa": '<path d="M9 5v14M15 5v14"/>',
+      "i-play": '<path d="M8 5.5v13l11-6.5z"/>',
+      "i-centrar": '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>',
       "i-mano": '<path d="M7 14V6.5a1.5 1.5 0 0 1 3 0V12M10 11V4.8a1.5 1.5 0 0 1 3 0V11M13 11V6a1.5 1.5 0 0 1 3 0v7M16 11.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.4a5 5 0 0 1-4-2L4.7 15.2a1.6 1.6 0 0 1 2.4-2z"/>'
     };
     var s = '<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true"><defs>';
@@ -109,6 +112,8 @@
       var l = div("leaf", c), d = 64 * s;
       l.style.cssText = "width:" + d + "px;height:" + d + "px;margin:" + (-d / 2) + "px 0 0 " + (-d / 2) + "px;transform:rotateY(" + a + "deg)";
     });
+    var lt = div("leaf hz", c), dt = 50 * s; /* disco horizontal: visto desde arriba la copa deja de ser una estrella */
+    lt.style.cssText = "width:" + dt + "px;height:" + dt + "px;margin:" + (-dt / 2) + "px 0 0 " + (-dt / 2) + "px;transform:rotateX(90deg) translateZ(" + (-12 * s) + "px)";
     var sh = div("shadow", t); sh.style.cssText = "width:" + 52 * s + "px;height:" + 52 * s + "px;margin:" + (-26 * s) + "px 0 0 " + (-26 * s) + "px";
   }
   function base(w, W, D) {
@@ -150,8 +155,8 @@
       build: function (w) {
         var Y = 7;
         base(w, 340, 230);
-        var cim = part(w, [0, -34, 0]);
-        box(cim, { w: 124, h: Y, d: 116, x: 96, y: 0, z: -12, c: "#8E83A3", ct: "#B2A8C6" });
+        var cim = part(w);
+        box(cim, { w: 108, h: Y, d: 116, x: 104, y: 0, z: -12, c: "#8E83A3", ct: "#B2A8C6" });
         var s = part(w);
         box(s, { w: 190, h: Y, d: 156, x: -45, y: 0, z: 0, c: CONC, ct: "#DDD6EA" });
         var casa = part(w, [-30, 0, 0]);
@@ -165,7 +170,7 @@
         box(amp, { w: 114, h: 8, d: 114, x: 96, y: Y, z: -12, c: LILAC });
         deco(c2.F.f, "shop", 14, 22, 82, 52);
         deco(c2.F.r, "door", 38, 88 - 60, 34, 60);
-        techo1(amp, { w: 124, d: 118, rh: 24, y: Y + 88, x: 96, z: -12, c: RED, over: 8 });
+        techo1(amp, { w: 108, d: 118, rh: 24, y: Y + 88, x: 104, z: -12, c: RED, over: 8 });
         var ar = part(w, [30, 6, 50]);
         arbol(ar, 215, 110, 1.05); arbol(ar, -215, 100, 1);
       }
@@ -175,11 +180,11 @@
       build: function (w) {
         var Y = 8, H = 92;
         base(w, 330, 230);
-        var piso = part(w, [0, -34, 0]);
+        var piso = part(w);
         box(piso, { w: 256, h: Y, d: 176, x: 0, y: 0, z: 0, c: CONC, ct: "#D8B592", top: "wood" });
         var par = part(w, [0, 0, -20]);
         var pb = box(par, { w: 256, h: H, d: 8, x: 0, y: Y, z: -84, c: WALL, cf: "#F6EEF8" });
-        deco(pb.F.f, "win", 150, 26, 54, 40);
+        deco(pb.F.f, "win", 150, 26, 54, 40); deco(pb.F.b, "win", 52, 26, 54, 40);
         box(par, { w: 8, h: H, d: 176, x: -124, y: Y, z: 0, c: WALL, cr: "#F6EEF8" });
         box(par, { w: 8, h: H, d: 176, x: 124, y: Y, z: 0, c: WALL, cl: "#F6EEF8" });
         var ban = part(w, [70, 6, -42]);
@@ -243,11 +248,11 @@
         box(ac, { w: 430, h: 3, d: 100, x: 0, y: 0, z: 118, c: "#6B5A85", ct: "#CFC6DE", top: "tile" });
         var tie = part(w, [0, 0, -50]);
         box(tie, { w: 430, h: 70, d: 112, x: 0, y: 0, z: -96, c: "#A9826D", ct: "#7FB08E" });
-        var ft = part(w, [0, -28, 0]);
+        var ft = part(w);
         box(ft, { w: 392, h: 12, d: 72, x: 0, y: 0, z: -28, c: "#8E83A3", ct: "#A99FBC" });
-        var gr = part(w, [0, 8, -34]);
+        var gr = part(w, [0, 8, -12]);
         box(gr, { w: 380, h: 20, d: 16, x: 0, y: 12, z: -64, c: "#B9B0C9" });
-        var tb = part(w, [0, -6, -52]);
+        var tb = part(w, [0, 0, -6]);
         box(tb, { w: 380, h: 6, d: 7, x: 0, y: 12, z: -50, c: NAVY });
         var bw = 52, bh = 30, bd = 38, FILAS = 3, r, k;
         for (r = 0; r < FILAS; r++) {
@@ -262,14 +267,15 @@
         }
         var top = 12 + FILAS * bh, ba = part(w, [0, 56, 10]);
         for (k = 0; k < 5; k++) box(ba, { w: 6, h: 36, d: 6, x: -170 + k * 85, y: top, z: -28, c: SALMON });
-        box(ba, { w: 346, h: 4, d: 4, x: 0, y: top + 12, z: -28, c: RED });
-        box(ba, { w: 346, h: 4, d: 4, x: 0, y: top + 28, z: -28, c: RED });
+        box(ba, { w: 342, h: 4, d: 4, x: 0, y: top + 12, z: -28, c: RED });
+        box(ba, { w: 342, h: 4, d: 4, x: 0, y: top + 28, z: -28, c: RED });
         var ar = part(w, [0, 6, 60]);
         arbol(ar, -215, 120, .9); arbol(ar, 215, 128, .9);
       }
     }
   };
 
+  var MQN = 0;
   var Maqueta = {
     tiene: function (t) { return !!BUILD[t]; },
     crear: function (host, tipo, o) {
@@ -291,10 +297,15 @@
       var bNi = boton("Noche", "luna", "", "Modo noche"); bNi.setAttribute("aria-pressed", "false");
       var bAu = boton("Girar solo", "girar", "", "Girar solo"); bAu.setAttribute("aria-pressed", reduce || o.auto === false ? "false" : "true");
       var sp = div("mq-sp", ui);
-      var bMe = boton("", "menos", "ico", "Alejar"), bMa = boton("", "mas", "ico", "Acercar"), bRe = boton("", "girar", "ico", "Volver a la vista inicial");
+      var bMe = boton("", "menos", "ico", "Alejar"), bMa = boton("", "mas", "ico", "Acercar"), bRe = boton("", "centrar", "ico", "Volver a la vista inicial");
+      var zm = div("mq-zm", ui); zm.appendChild(bMe); zm.appendChild(bMa); zm.appendChild(bRe); /* el grupo de zoom salta de fila entero, no botón a botón */
       if (o.onFoto) { var bFo = boton("Ver foto", "foto", "keep"); bFo.addEventListener("click", o.onFoto); ui.insertBefore(bFo, sp); }
-      host.setAttribute("tabindex", "0"); host.setAttribute("role", "group");
-      host.setAttribute("aria-label", "Maqueta 3D. Arrastrá para girar; con el teclado, las flechas giran y más y menos acercan.");
+      var rolPrevio = host.getAttribute("role"), conNombre = host.hasAttribute("aria-labelledby");
+      var inst = div("sr", host); inst.id = "mqInst" + (++MQN); inst.hidden = true;
+      inst.textContent = "Arrastrá para girar; con el teclado, las flechas giran y más y menos acercan.";
+      host.setAttribute("tabindex", "0"); host.setAttribute("aria-describedby", inst.id);
+      if (!rolPrevio) host.setAttribute("role", "group");
+      if (!conNombre) host.setAttribute("aria-label", "Maqueta 3D");
 
       var S = { yaw: -34, pitch: 24, zoom: 1, ze: 1, vy: 0, auto: !reduce && o.auto !== false, base: 1, intro: reduce ? 1 : 0 }, I = { yaw: -34, pitch: 24 };
       var raf = 0, last = 0, idle = 0, visible = true, drag = null, ptrs = {}, pinch = 0, vivo = true, offs = [];
@@ -364,6 +375,7 @@
         e.preventDefault(); S.zoom = clamp(S.zoom * (e.deltaY < 0 ? 1.06 : .94), .5, 2.2); usado(); pintar();
       }, { passive: false });
       on(host, "keydown", function (e) {
+        if (e.ctrlKey || e.metaKey || e.altKey) return; /* Ctrl +/-, Alt+Flecha y similares son del navegador */
         var k = e.key, c = true;
         if (k === "ArrowLeft") S.yaw -= 8; else if (k === "ArrowRight") S.yaw += 8;
         else if (k === "ArrowUp") S.pitch = clamp(S.pitch - 5, 6, 80); else if (k === "ArrowDown") S.pitch = clamp(S.pitch + 5, 6, 80);
@@ -373,11 +385,9 @@
       });
       bEx.addEventListener("click", function () {
         var on = host.classList.toggle("ex"); bEx.setAttribute("aria-pressed", String(on)); bEx.classList.remove("pulse"); usado(); arrancar();
-        var s = bEx.querySelector("span"); if (s) s.textContent = on ? "Juntar piezas" : cfg.ex;
       });
       bNi.addEventListener("click", function () {
-        var on = host.classList.toggle("night"); bNi.setAttribute("aria-pressed", String(on));
-        bNi.innerHTML = ico(on ? "sol" : "luna") + "<span>" + (on ? "Día" : "Noche") + "</span>"; usado();
+        var on = host.classList.toggle("night"); bNi.setAttribute("aria-pressed", String(on)); usado();
       });
       bAu.addEventListener("click", function () {
         S.auto = !S.auto; bAu.setAttribute("aria-pressed", String(S.auto)); idle = 0; arrancar();
@@ -397,7 +407,9 @@
           Object.keys(ptrs).forEach(function (k) { try { host.releasePointerCapture(+k); } catch (x) {} });
           offs.forEach(function (f) { f(); }); offs = [];
           host.innerHTML = ""; host.classList.remove("mq", "ex", "night", "used", "drag");
-          ["tabindex", "role", "aria-label"].forEach(function (a) { host.removeAttribute(a); });
+          ["tabindex", "aria-describedby"].forEach(function (a) { host.removeAttribute(a); });
+          if (!rolPrevio) host.removeAttribute("role");
+          if (!conNombre) host.removeAttribute("aria-label");
         }
       };
     }
@@ -432,13 +444,21 @@
         '<div class="qv-actions"><button class="btn primary lg-btn" type="button" id="ovCta">' + ico("calc") + "Quiero una como esta</button>" +
         '<a class="btn wa" id="ovWa" href="#" target="_blank" rel="noopener"><svg class="ic fill"><use href="#i-wa"/></svg>Preguntar por WhatsApp</a></div>' +
         '<div class="ov-pos" id="ovPos"></div>' +
-      "</div>";
+      '</div><div class="sr" id="ovLive" role="status" aria-live="polite"></div>';
     $("#ovTabFoto").addEventListener("click", function () { ponerTab("foto"); });
     $("#ovTab3d").addEventListener("click", function () { ponerTab("3d"); });
+    $(".ov-tabs", ov).addEventListener("keydown", function (e) {
+      var k = e.key; if (k !== "ArrowLeft" && k !== "ArrowRight" && k !== "Home" && k !== "End") return;
+      var hab = $$('[role="tab"]', ov).filter(function (b) { return !b.disabled; }); if (hab.length < 2) return;
+      e.preventDefault();
+      var i = hab.indexOf(document.activeElement);
+      i = k === "Home" ? 0 : k === "End" ? hab.length - 1 : (i + (k === "ArrowRight" ? 1 : -1) + hab.length) % hab.length;
+      hab[i].focus(); ponerTab(hab[i].id === "ovTab3d" ? "3d" : "foto");
+    });
     $(".ov-nav.p", ov).addEventListener("click", function () { moverOv(-1); });
     $(".ov-nav.n", ov).addEventListener("click", function () { moverOv(1); });
     $("#ovCta").addEventListener("click", function () {
-      var o = OBRAS[OV.i]; U.cerrar(ov); U.abrirSol(o.tipo, "Me interesa algo como: " + o.titulo + ".");
+      var o = OBRAS[OV.i]; U.cerrar(ov); U.abrirSol(U.BYK[o.tipo] ? o.tipo : "otro", "Me interesa algo como: " + o.titulo + ".");
     });
   }
 
@@ -451,17 +471,18 @@
     if (!o.foto) { p.innerHTML = ""; return; }
     p.innerHTML = '<div class="ovp"><div class="ovp-card"><div class="ovp-shadow"></div><div class="ovp-frame" style="--g:var(' + t.g + ')"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '"' + enfoque(o) + '></div>' +
       '<span class="ovp-chip c1">' + U.icono(t.k) + esc(t.n) + "</span>" +
-      '<span class="ovp-chip c2">' + ico("cubo") + "Mirá la maqueta 3D</span></div></div>";
+      '<button type="button" class="ovp-chip c2">' + ico("cubo") + "Mirá la maqueta 3D</button></div></div>";
     var wrap = $(".ovp", p), card = $(".ovp-card", p);
-    $(".c2", p).style.cursor = "pointer"; $(".c2", p).addEventListener("click", function () { ponerTab("3d"); });
+    $(".c2", p).addEventListener("click", function () { ponerTab("3d"); });
     if (reduce) return;
     wrap.addEventListener("pointermove", function (e) {
       var r = wrap.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
       card.classList.add("live");
       card.style.setProperty("--ry", (x * 16).toFixed(2) + "deg"); card.style.setProperty("--rx", (-y * 12).toFixed(2) + "deg");
       card.style.setProperty("--gx", (x + .5) * 100 + "%"); card.style.setProperty("--gy", (y + .5) * 100 + "%");
+      card.style.setProperty("--tx", (-x * 19.2).toFixed(1) + "px"); card.style.setProperty("--ty", (-y * 14.4).toFixed(1) + "px");
     });
-    wrap.addEventListener("pointerleave", function () { card.classList.remove("live"); card.style.setProperty("--ry", "0deg"); card.style.setProperty("--rx", "0deg"); });
+    wrap.addEventListener("pointerleave", function () { card.classList.remove("live"); card.style.setProperty("--ry", "0deg"); card.style.setProperty("--rx", "0deg"); card.style.setProperty("--tx", "0px"); card.style.setProperty("--ty", "0px"); });
   }
   function montar3d() {
     var o = OBRAS[OV.i], host = $("#ov3d");
@@ -475,9 +496,11 @@
     var o = OBRAS[OV.i];
     if (t === "foto" && !o.foto) t = "3d";
     OV.tab = t;
+    var ac = document.activeElement, dentro = !!ac && (($("#ovFoto").contains(ac) && t !== "foto") || ($("#ov3d").contains(ac) && t !== "3d"));
     $("#ovFoto").hidden = t !== "foto"; $("#ov3d").hidden = t !== "3d";
     $("#ovTabFoto").setAttribute("aria-selected", String(t === "foto")); $("#ovTab3d").setAttribute("aria-selected", String(t === "3d"));
     if (t === "3d" && !OV.mq) montar3d();
+    if (dentro) $(t === "foto" ? "#ovTabFoto" : "#ovTab3d").focus(); /* el botón que tenía el foco quedó oculto */
   }
   function mostrarObra(i) {
     var o = OBRAS[i], t = U.BYK[o.tipo] || U.OTRO; OV.i = i;
@@ -494,14 +517,19 @@
     pintarFoto(o, t);
     ponerTab(o.foto ? "foto" : "3d");
   }
-  function moverOv(d) { mostrarObra((OV.i + d + OBRAS.length) % OBRAS.length); }
+  function moverOv(d) {
+    mostrarObra((OV.i + d + OBRAS.length) % OBRAS.length);
+    $("#ovLive").textContent = "Obra " + (OV.i + 1) + " de " + OBRAS.length + ": " + OBRAS[OV.i].titulo;
+  }
   function abrirObra(i) {
     if (!ov || !OBRAS[i]) return;
+    $$(".modal.on").forEach(function (m) { if (m !== ov) U.cerrar(m); }); /* app.js recuerda una sola ventana abierta */
     armarOv(); mostrarObra(i); U.abrir(ov);
   }
   document.addEventListener("keydown", function (e) {
     if (!ov || !ov.classList.contains("on")) return;
-    if (e.target.closest && e.target.closest(".mq")) return;
+    if (e.target.closest && e.target.closest(".mq, [role=tablist]")) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key === "ArrowLeft") moverOv(-1); if (e.key === "ArrowRight") moverOv(1);
   });
   document.addEventListener("click", function (e) {
@@ -526,13 +554,14 @@
     vis.classList.remove("is3d");
     if (!Maqueta.tiene(k) || !has3d) return;
     var foto = vis.innerHTML, tieneFoto = !!$("img", vis);
-    function ver3d() {
+    function ver3d(e) {
       vis.classList.add("is3d");
-      QV.mq = Maqueta.crear(vis, k, { onFoto: tieneFoto ? function () { QV.mq.destruir(); QV.mq = null; vis.classList.remove("is3d"); vis.innerHTML = foto; poner3dBoton(); } : null });
+      QV.mq = Maqueta.crear(vis, k, { onFoto: tieneFoto ? function () { QV.mq.destruir(); QV.mq = null; vis.classList.remove("is3d"); vis.innerHTML = foto; poner3dBoton().focus(); } : null });
+      if (e && tieneFoto) vis.focus(); /* el botón «Ver maqueta 3D» se destruyó: el foco pasa a la maqueta */
     }
     function poner3dBoton() {
       var b = document.createElement("button"); b.type = "button"; b.className = "mq-b keep qv-3d";
-      b.innerHTML = ico("cubo") + "<span>Ver maqueta 3D</span>"; b.addEventListener("click", ver3d); vis.appendChild(b);
+      b.innerHTML = ico("cubo") + "<span>Ver maqueta 3D</span>"; b.addEventListener("click", ver3d); vis.appendChild(b); return b;
     }
     if (tieneFoto) poner3dBoton(); else ver3d();
   });
@@ -550,6 +579,8 @@
     wrap.setAttribute("role", "group"); wrap.setAttribute("aria-roledescription", "carrusel"); wrap.setAttribute("aria-label", "Obras de IDESA en 3D");
     wrap.innerHTML = '<div class="r3d-hint">' + ico("mano") + "Arrastrá para girar</div>" +
       '<div class="r3d-stage"><div class="r3d-tilt"><div class="r3d-spin"></div></div><div class="r3d-floor"></div></div>' +
+      '<button class="r3d-btn r3d-pp" type="button" aria-label="Pausar el giro automático">' + ico("pausa") + '</button>' +
+      '<div class="sr" id="r3dLive" role="status" aria-live="polite"></div>' +
       '<div class="r3d-hud"><button class="r3d-btn" type="button" data-d="1" aria-label="Obra anterior"><svg class="ic"><use href="#i-chl"/></svg></button>' +
       '<div class="r3d-cap"><b id="r3dT"></b><small id="r3dS"></small></div>' +
       '<button class="r3d-btn" type="button" data-d="-1" aria-label="Obra siguiente"><svg class="ic"><use href="#i-chr"/></svg></button></div>';
@@ -568,7 +599,7 @@
       b.addEventListener("focus", function () { ir(j); });
     });
 
-    var R = 300, rot = 0, vel = 0, tgt = null, drag = null, suprimir = false, hover = false, idle = 0, vis = false, raf = 0, last = 0, lastY = scrollY, frente = -1;
+    var R = 300, rot = 0, vel = 0, tgt = null, drag = null, suprimir = false, hover = false, idle = 0, vis = false, raf = 0, last = 0, lastY = scrollY, frente = -1, pausa = false, foco = false;
     function medir() {
       var w = stage.clientWidth, cw = w > 760 ? clamp(w * .2, 170, 235) : clamp(w * .46, 150, 210);
       R = cw / 2 / Math.tan(Math.PI / n) * 1.3 + 18;
@@ -580,7 +611,7 @@
       for (var j = 0; j < n; j++) {
         var a = (((j * paso + rot) % 360) + 540) % 360 - 180, f = Math.cos(a * Math.PI / 180), pop = Math.max(0, (f - .8) / .2);
         cards[j].style.transform = "rotateY(" + j * paso + "deg) translateZ(" + (R + pop * 46) + "px)";
-        cards[j].style.setProperty("--f", Math.max(0, f).toFixed(3));
+        var op = (.5 + .5 * Math.max(0, f)).toFixed(2); if (cards[j]._op !== op) { cards[j]._op = op; cards[j].style.opacity = op; }
         if (f > best) { best = f; bi = j; }
       }
       if (bi !== frente) {
@@ -596,7 +627,7 @@
       else {
         rot += vel * dt; vel *= Math.pow(.94, dt / 16); if (Math.abs(vel) < .0004) vel = 0;
         idle = Math.max(0, idle - dt);
-        if (!hover && idle === 0) rot -= dt * .0075;
+        if (!hover && !pausa && !foco && idle === 0) rot -= dt * .0075;
         rot -= clamp(ds, -80, 80) * .06;
       }
       pintar();
@@ -607,17 +638,31 @@
     function arrancar() { if (!raf && vis && !tapado()) { last = 0; lastY = scrollY; raf = requestAnimationFrame(bucle); } }
     document.addEventListener("idesa:cerrar", arrancar);
     function ir(j) { var k = Math.round((rot + j * paso) / 360); tgt = -j * paso + 360 * k; vel = 0; idle = 4000; arrancar(); }
-    function mover(d) { tgt = Math.round(rot / paso) * paso + d * paso; vel = 0; idle = 4000; wrap.classList.add("used"); arrancar(); }
-    $$(".r3d-btn", wrap).forEach(function (b) { b.addEventListener("click", function () { mover(+b.getAttribute("data-d")); }); });
+    function mover(d) {
+      tgt = Math.round(rot / paso) * paso + d * paso; vel = 0; idle = 4000; wrap.classList.add("used"); arrancar();
+      var q = lista[(((-Math.round(tgt / paso)) % n) + n) % n];
+      $("#r3dLive").textContent = "Obra " + (q.i + 1) + " de " + OBRAS.length + ": " + q.o.titulo;
+    }
+    var pp = $(".r3d-pp", wrap);
+    pp.addEventListener("click", function () {
+      pausa = !pausa; pp.innerHTML = ico(pausa ? "play" : "pausa"); /* el nombre cambia: sin aria-pressed */
+      pp.setAttribute("aria-label", pausa ? "Reanudar el giro automático" : "Pausar el giro automático"); idle = 0; arrancar();
+    });
+    /* con el foco de teclado dentro del carrusel no gira: la tarjeta enfocada se alejaba sola */
+    wrap.addEventListener("focusin", function (e) { try { foco = e.target.matches(":focus-visible"); } catch (x) { foco = true; } }); /* Safari < 15.4 lanza con :focus-visible */
+    wrap.addEventListener("focusout", function () { foco = false; });
+    $$(".r3d-btn[data-d]", wrap).forEach(function (b) { b.addEventListener("click", function () { mover(+b.getAttribute("data-d")); }); });
     wrap.addEventListener("keydown", function (e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === "ArrowLeft") { e.preventDefault(); mover(1); } else if (e.key === "ArrowRight") { e.preventDefault(); mover(-1); }
     });
     stage.addEventListener("pointerdown", function (e) {
+      if (!e.isPrimary) return; /* un segundo dedo no reinicia el arrastre */
       if (e.pointerType === "mouse" && e.button !== 0) return; /* el menú contextual se traga el pointerup y dejaba el anillo pegado al puntero */
       suprimir = false; drag = { x: e.clientX, y: e.clientY, rot: rot, t: e.timeStamp, on: false, id: e.pointerId };
     });
     stage.addEventListener("pointermove", function (e) {
-      if (!drag) return;
+      if (!drag || e.pointerId !== drag.id) return;
       var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (!drag.on) {
         if (Math.abs(dx) < 7 || Math.abs(dx) < Math.abs(dy)) return;
@@ -627,7 +672,8 @@
       var nr = drag.rot + dx * (180 / Math.PI) / R * .9, dt = Math.max(8, e.timeStamp - drag.t);
       vel = clamp((nr - rot) / dt, -.7, .7); rot = nr; drag.t = e.timeStamp; drag.last = e.clientX; pintar();
     });
-    function soltar() {
+    function soltar(e) {
+      if (drag && e && e.pointerId !== drag.id) return;
       if (drag && drag.on) { suprimir = true; idle = 2500; }
       drag = null; stage.classList.remove("drag"); arrancar();
     }
@@ -665,9 +711,10 @@
         el.classList.add("live");
         el.style.setProperty("--ry", ((x - .5) * 14).toFixed(2) + "deg"); el.style.setProperty("--rx", ((.5 - y) * 12).toFixed(2) + "deg");
         el.style.setProperty("--gx", x * 100 + "%"); el.style.setProperty("--gy", y * 100 + "%");
+        el.style.setProperty("--tx", ((.5 - x) * 12.6).toFixed(1) + "px"); el.style.setProperty("--ty", ((.5 - y) * 10.8).toFixed(1) + "px");
       });
       el.addEventListener("pointerleave", function () {
-        el.classList.remove("live"); el.style.setProperty("--ry", "0deg"); el.style.setProperty("--rx", "0deg");
+        el.classList.remove("live"); el.style.setProperty("--ry", "0deg"); el.style.setProperty("--rx", "0deg"); el.style.setProperty("--tx", "0px"); el.style.setProperty("--ty", "0px");
       });
     });
   })();

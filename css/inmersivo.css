@@ -10,7 +10,7 @@
 .r3d-tilt{position:absolute;left:50%;top:46px;width:0;height:0;transform-style:preserve-3d;transform:rotateX(-8deg)}
 .r3d-spin{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;will-change:transform}
 .rc{position:absolute;left:calc(var(--cw)/-2);top:0;width:var(--cw);height:var(--ch);border-radius:22px;overflow:hidden;padding:0;border:0;color:#fff;text-align:left;
-  backface-visibility:hidden;-webkit-backface-visibility:hidden;opacity:calc(.5 + .5*var(--f,1));box-shadow:0 30px 60px -28px rgba(0,0,0,.7)}
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 30px 60px -28px rgba(0,0,0,.7)}
 .rc.tile.hue{animation:none}
 .rc .tt{font-size:.95rem;padding:46px 18px 16px}
 .rc:focus-visible{outline:3px solid var(--salmon);outline-offset:4px}
@@ -35,8 +35,9 @@
 .shot{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .55s var(--ease),box-shadow .4s;will-change:transform}
 .shot.live{transition:transform .08s linear,box-shadow .4s}
 .shot:hover{--sc:1.035;box-shadow:0 34px 60px -26px rgba(43,33,66,.6);transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1))}
-.shot img{transform:translate3d(calc(var(--ry,0deg)*-.9),calc(var(--rx,0deg)*.9),0) scale(1.1);transition:transform .35s var(--ease)}
-.shot:hover img{transform:translate3d(calc(var(--ry,0deg)*-.9),calc(var(--rx,0deg)*.9),0) scale(1.14)}
+.shot img{transition:transform .35s var(--ease)}
+@media(hover:hover) and (pointer:fine){.shot img{transform:translate3d(var(--tx,0px),var(--ty,0px),0) scale(1.1)}}
+@media(hover:hover) and (pointer:fine){.shot:hover img{transform:translate3d(var(--tx,0px),var(--ty,0px),0) scale(1.14)}}
 .shot .gl{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.34),transparent 46%)}
 .shot:hover .gl{opacity:1}
 .shot.pre{opacity:0}
@@ -48,7 +49,7 @@
 .ov-stage{position:relative;min-height:min(580px,74vh);background:var(--navy);color:#fff;overflow:hidden;isolation:isolate}
 .ov-pane{position:absolute;inset:0}
 .ov-tabs{position:absolute;top:14px;left:14px;z-index:6;display:flex;gap:4px;padding:4px;border-radius:99px;background:rgba(21,14,34,.6);backdrop-filter:blur(6px)}
-.ov-tabs button{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:99px;font-weight:700;font-size:.82rem;color:#e1d8ef;transition:background .25s,color .25s}
+.ov-tabs button{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:8px 15px;border-radius:99px;font-weight:700;font-size:.82rem;color:#e1d8ef;transition:background .25s,color .25s}
 .ov-tabs button[aria-selected="true"]{background:#fff;color:var(--navy)}
 .ov-tabs button:disabled{opacity:.4;cursor:not-allowed}
 .ov-tabs .ic{width:1.15em;height:1.15em}
@@ -57,7 +58,7 @@
 .ov-nav.p{left:12px}.ov-nav.n{right:12px}
 .ov-nav+.ov-nav{margin-top:-23px}
 .ov-info{padding:38px 32px 30px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto;max-height:94vh}
-.ov-info small.k{color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:.7rem}
+.ov-info small.k{color:var(--red-btn);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:.7rem}
 .ov-info h3{font-size:1.65rem;padding-right:34px}
 .ov-info .ov-desc{color:var(--muted)}
 .ov-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:2px 0}
@@ -73,14 +74,14 @@
 .ovp-card{position:relative;width:min(100%,640px);height:100%;max-height:440px;transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease)}
 .ovp-card.live{transition:transform .08s linear}
 .ovp-frame{position:absolute;inset:0;border-radius:22px;overflow:hidden;box-shadow:0 40px 70px -30px rgba(0,0,0,.8);background:var(--g1)}
-.ovp-frame img{width:100%;height:100%;object-fit:cover;transform:scale(1.08) translate3d(calc(var(--ry,0deg)*-1.2),calc(var(--rx,0deg)*1.2),0);transition:transform .5s var(--ease)}
+.ovp-frame img{width:100%;height:100%;object-fit:cover;transform:scale(1.08) translate3d(var(--tx,0px),var(--ty,0px),0);transition:transform .5s var(--ease)}
 .ovp-card.live .ovp-frame img{transition:transform .08s linear}
 .ovp-frame::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at var(--gx,50%) var(--gy,30%),rgba(255,255,255,.28),transparent 50%);pointer-events:none}
 .ovp-shadow{position:absolute;left:6%;right:6%;bottom:-26px;height:40px;transform:translateZ(-60px);background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);filter:blur(8px)}
 .ovp-chip{position:absolute;display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:99px;font-weight:800;font-size:.8rem;background:#fff;color:var(--navy);box-shadow:0 14px 30px -10px rgba(0,0,0,.6)}
 .ovp-chip .ic{color:var(--red)}
-.ovp-chip.c1{left:-14px;top:26px;transform:translateZ(70px)}
-.ovp-chip.c2{right:-10px;bottom:34px;transform:translateZ(54px);background:var(--red-btn);color:#fff}
+.ovp-chip.c1{left:-2px;top:26px;transform:translateZ(70px)}
+.ovp-chip.c2{right:-5px;bottom:34px;transform:translateZ(54px);background:var(--red-btn);color:#fff}
 .ovp-chip.c2 .ic{color:#fff}
 
 /* ---------- maqueta 3D ---------- */
@@ -98,7 +99,7 @@
 .mq.ex .pt{transform:translate3d(calc(var(--bx,0px) + var(--x,0px)),calc((var(--by,0px) + var(--y,0px))*-1),calc(var(--bz,0px) + var(--z,0px)))}
 .mq .f{position:absolute;left:0;top:0;background-color:rgb(calc(var(--fr)*var(--lum)),calc(var(--fg)*var(--lum)),calc(var(--fb)*var(--lum)));backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .mq .f.roof,.mq .f.two{backface-visibility:visible;-webkit-backface-visibility:visible}
-.mq .f.glass{background:linear-gradient(135deg,rgba(190,225,255,.55),rgba(120,160,230,.35));backface-visibility:visible}
+.mq .f.glass{background:linear-gradient(135deg,rgba(190,225,255,.55),rgba(120,160,230,.35));backface-visibility:visible;-webkit-backface-visibility:visible}
 .mq .top.plinth{background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:26px 26px}
 .mq .top.wood{background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.14) 0 1px,transparent 1px 16px)}
 .mq .top.tile{background-image:linear-gradient(rgba(0,0,0,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.12) 1px,transparent 1px);background-size:14px 14px}
@@ -115,18 +116,20 @@
 .mq .shop{background:linear-gradient(120deg,rgba(190,225,255,.9) 0 40%,rgba(255,255,255,.6) 40% 46%,rgba(150,190,240,.85) 46%);border:4px solid #2B2142;box-sizing:border-box;transition:background .8s,box-shadow .8s}
 .mq.night .shop{background:linear-gradient(120deg,#FFE9B0,#FFD27A);box-shadow:0 0 28px 5px rgba(255,214,120,.7)}
 .mq .sign{display:grid;place-items:center;color:#fff;font:800 11px/1 Montserrat,system-ui,sans-serif;letter-spacing:.32em;text-transform:uppercase}
-.mq .leaf{position:absolute;left:0;top:0;border-radius:50%;background:radial-gradient(circle at 38% 32%,#8CCB9D,#4E9468 60%,#376E4C);backface-visibility:visible;opacity:calc(.55 + .45*var(--lum))}
+.mq .leaf{position:absolute;left:0;top:0;border-radius:50%;background:radial-gradient(circle at 38% 32%,rgb(calc(140*var(--lum)),calc(203*var(--lum)),calc(157*var(--lum))),rgb(calc(78*var(--lum)),calc(148*var(--lum)),calc(104*var(--lum))) 60%,rgb(calc(55*var(--lum)),calc(110*var(--lum)),calc(76*var(--lum))));backface-visibility:visible;-webkit-backface-visibility:visible}
+.mq .leaf.hz{background:radial-gradient(circle,rgb(calc(108*var(--lum)),calc(176*var(--lum)),calc(130*var(--lum))) 0,rgb(calc(86*var(--lum)),calc(160*var(--lum)),calc(114*var(--lum))) 60%,rgb(calc(66*var(--lum)),calc(130*var(--lum)),calc(90*var(--lum))) 100%)}
 .mq .shadow{position:absolute;left:0;top:0;border-radius:50%;background:radial-gradient(closest-side,rgba(20,10,40,.5),transparent);transform:rotateX(90deg) translateZ(1px);filter:blur(5px)}
 .mq .pipe{border-radius:6px}
 
-.mq-ui{position:absolute;left:14px;right:14px;bottom:14px;z-index:5;display:flex;flex-wrap:wrap;gap:8px;align-items:center;pointer-events:none}
+.mq-ui{position:absolute;left:14px;right:14px;bottom:14px;z-index:5;display:flex;flex-wrap:wrap;gap:6px;align-items:center;pointer-events:none}
 .mq-ui>*{pointer-events:auto}
-.mq-b{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:99px;background:rgba(21,14,34,.72);color:#fff;font-weight:700;font-size:.8rem;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.16);transition:background .25s,transform .25s var(--ease)}
-.mq-b:hover{background:rgba(226,55,55,.9)}
+.mq-b{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:9px 12px;border-radius:99px;background:rgba(21,14,34,.72);color:#fff;font-weight:700;font-size:.8rem;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.16);transition:background .25s,transform .25s var(--ease)}
+.mq-b:hover{background:#B52424}
 .mq-b[aria-pressed="true"]{background:#fff;color:var(--navy);border-color:#fff}
 .mq-b .ic{width:1.15em;height:1.15em}
-.mq-b.ico{padding:9px;width:38px;height:38px;justify-content:center}
-.mq-b.pulse{animation:mqpulse 2.2s ease-in-out infinite}
+.mq-zm{display:flex;gap:6px;flex:none}
+.mq-b.ico{padding:9px;width:40px;height:40px;justify-content:center}
+.mq-b.pulse{animation:mqpulse 2.2s ease-in-out 2}
 @keyframes mqpulse{50%{box-shadow:0 0 0 7px rgba(241,141,113,.35)}}
 .mq-sp{flex:1}
 .mq-hint{position:absolute;top:22px;right:16px;z-index:4;display:inline-flex;gap:8px;align-items:center;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(21,14,34,.55);padding:7px 14px;border-radius:99px;pointer-events:none;transition:opacity .6s;white-space:nowrap}
@@ -144,19 +147,45 @@
   .ov-info{max-height:none;overflow:visible;padding:26px 22px 24px}
   .ovp{padding:64px 22px 62px}
   .ovp-card{max-height:none}
-  .ovp-chip.c1{left:-6px}.ovp-chip.c2{right:-4px}
   .mq-hint{top:64px;right:auto;left:50%;transform:translateX(-50%)}
   .mq-b{padding:8px 12px;font-size:.76rem}
   .r3d-hud{gap:10px}
 }
+@media(min-width:861px) and (max-width:960px){.mq-note{bottom:112px}}
 @media(max-width:520px){
-  .mq-note,.mq-b[aria-label="Alejar"],.mq-b[aria-label="Acercar"]{display:none}
-  .ov-facts{grid-template-columns:1fr 1fr 1fr}
+  .mq-note{display:none}
+  .ov-facts{grid-template-columns:1fr 1fr}
   .mq-b span{display:none}.mq-b{padding:9px;width:40px;height:40px;justify-content:center}
   .mq-b.keep span{display:inline}.mq-b.keep{width:auto;padding:9px 14px}
+}
+@media(max-width:360px){
+  .ov-tabs button{padding-inline:9px}
+  .r3d-hint{left:12px;transform:none}
 }
 @media(prefers-reduced-motion:reduce){
   .mq .pt,.mq,.mq-sky.nt,.shot,.ovp-card,.ovp-frame img{transition:none!important}
   .shot.go{animation:none}.shot.pre{opacity:1}
+  .shot img,.shot:hover img,.ovp-frame img{transform:none}
   .mq-b.pulse{animation:none}
 }
+
+/* A1 · el anillo de foco normal queda recortado por el overflow:hidden del visor y de la ventana: se dibuja por dentro */
+.mq:focus-visible{outline:0}
+.mq:focus-visible::after{content:"";position:absolute;inset:6px;z-index:6;pointer-events:none;border-radius:16px;border:3px solid #fff;box-shadow:0 0 0 3px var(--navy),inset 0 0 0 3px var(--navy)}
+
+/* A4 · botón de pausa del carrusel (WCAG 2.2.2) */
+.r3d-pp{position:absolute;top:8px;right:max(12px,calc((100% - min(1180px,100% - 40px))/2));z-index:3;width:44px;height:44px}
+
+/* A7 · texto de las tarjetas legible también sobre fotos claras */
+.rc .tt,.shot .tt,.rib .tt{background:linear-gradient(rgba(21,14,34,0),rgba(21,14,34,.72) 40%,rgba(21,14,34,.9))}
+.rc .tt small,.shot .tt small,.rib .tt small{opacity:.92}
+
+/* R1 · el desenfoque de fondo sobre una escena 3D que se mueve obliga a repintar y desenfocar todo cada cuadro.
+   Los fondos pasan a ser casi opacos y se quita el blur de la ventana mientras muestra una maqueta. */
+.mq-b,.ov-tabs,.ov-nav,.b3d{-webkit-backdrop-filter:none;backdrop-filter:none}
+.mq-b{background:rgba(21,14,34,.8)}
+.ov-tabs,.ov-nav{background:rgba(21,14,34,.72)}
+.b3d{background:rgba(21,14,34,.72)}
+#ov,#qv{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(21,14,34,.82)}
+/* el brillo del mouse no tapa el pie de la foto */
+.shot .tt{z-index:2}
