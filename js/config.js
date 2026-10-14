@@ -1,51 +1,54 @@
 /* ============================================================
    DATOS DEL NEGOCIO — lo único que hay que editar para completar el sitio.
-   Todo lo que esté en null se muestra como «Por confirmar» mientras demo sea true.
+   Lo que esté en null se muestra como «Por confirmar» mientras demo sea true.
    Con demo en false, lo vacío simplemente se oculta.
    ============================================================ */
-window.IDESA = {
-  demo: true,
+(function () {
+  var base = (document.currentScript && document.currentScript.src || '').replace(/js\/config\.js.*$/, '');
 
-  nombre: "Constructora IDESA",
-  corto: "IDESA",
+  window.IDESA = {
+    demo: true,
 
-  /* ---- Datos entregados por el negocio ---- */
-  telefono: "6264 3211",
-  telefonoIntl: "+506 6264 3211",
-  whatsapp: "50662643211", // sin signos ni espacios; confirmar que este número tenga WhatsApp
-  instagramUsuario: "@idesaconstructora_cr",
-  instagram: "https://www.instagram.com/idesaconstructora_cr/",
-  facebookNombre: "Constructora IDESA",
-  facebook: "https://www.facebook.com/search/pages?q=Constructora%20IDESA", // reemplazar por el enlace exacto
+    nombre: "Constructora IDESA",
+    corto: "IDESA",
 
-  /* ---- Logo ----
-     Poner la ruta del archivo en la carpeta img/ (SVG o PNG con fondo transparente).
-     logoSobreOscuro es la versión clara del logo, para el pie y el modo oscuro. */
-  logo: null,            // ej. "img/logo.svg"
-  logoSobreOscuro: null, // ej. "img/logo-claro.svg"
+    /* ---- Datos entregados por el negocio ---- */
+    telefono: "6264 3211",
+    telefonoIntl: "+506 6264 3211",
+    whatsapp: "50662643211", // sin signos ni espacios; confirmar que este número tenga WhatsApp
+    instagramUsuario: "@idesaconstructora_cr",
+    instagram: "https://www.instagram.com/idesaconstructora_cr/",
+    facebookNombre: "Constructora IDESA",
+    facebook: "https://www.facebook.com/search/pages?q=Constructora%20IDESA", // reemplazar por el enlace exacto
 
-  /* ---- Fotos ----
-     fotos: la imagen principal de cada tipo de obra (portada y servicios).
-     obras: la galería. Cada una con su foto, zona, área y estado.
-     Mientras una foto sea null, se muestra una ilustración de ejemplo. */
-  fotos: { casa: null, ampliacion: null, remodelacion: null, comercial: null, muros: null }, // ej. casa: "img/casa.jpg"
-  obras: [
-    { tipo: "casa", titulo: "Casa de habitación", foto: null, zona: null, area: null, estado: null },
-    { tipo: "ampliacion", titulo: "Ampliación de vivienda", foto: null, zona: null, area: null, estado: null },
-    { tipo: "remodelacion", titulo: "Remodelación de cocina", foto: null, zona: null, area: null, estado: null },
-    { tipo: "comercial", titulo: "Local comercial", foto: null, zona: null, area: null, estado: null },
-    { tipo: "muros", titulo: "Muro de contención", foto: null, zona: null, area: null, estado: null },
-    { tipo: "casa", titulo: "Casa de dos niveles", foto: null, zona: null, area: null, estado: null }
-  ],
+    /* ---- Fotos ----
+       fotos: la imagen principal de cada tipo de obra (órbita de la portada y tarjetas).
+       obras: la galería (cinta, mosaico y visor). Cada una con foto, zona, área y estado.
+       Mientras una foto sea null se muestra una tarjeta de marca. Ejemplo: casa: "img/casa.jpg" */
+    fotos: { casa: null, ampliacion: null, remodelacion: null, comercial: null, muros: null },
+    obras: [
+      { tipo: "casa", titulo: "Casa de habitación", foto: null, zona: null, area: null, estado: null },
+      { tipo: "ampliacion", titulo: "Ampliación de vivienda", foto: null, zona: null, area: null, estado: null },
+      { tipo: "remodelacion", titulo: "Remodelación de cocina", foto: null, zona: null, area: null, estado: null },
+      { tipo: "comercial", titulo: "Local comercial", foto: null, zona: null, area: null, estado: null },
+      { tipo: "muros", titulo: "Muro de contención", foto: null, zona: null, area: null, estado: null },
+      { tipo: "casa", titulo: "Casa de dos niveles", foto: null, zona: null, area: null, estado: null },
+      { tipo: "comercial", titulo: "Bodega", foto: null, zona: null, area: null, estado: null },
+      { tipo: "remodelacion", titulo: "Remodelación de baño", foto: null, zona: null, area: null, estado: null }
+    ],
 
-  /* ---- Pendientes de confirmar con el negocio ---- */
-  direccion: null,
-  horario: null,
-  zona: null,
-  correo: null,
-  cedulaJuridica: null,
-  cfia: null,
-  polizas: null,
-  anios: null,
-  obrasEntregadas: null
-};
+    /* ---- Pendientes de confirmar con el negocio ---- */
+    direccion: null,
+    horario: null,
+    zona: null,
+    correo: null,
+    cedulaJuridica: null,
+    cfia: null,
+    polizas: null,
+    anios: null,
+    obrasEntregadas: null,
+
+    /* convierte una ruta relativa a la raíz del sitio en una ruta que funciona desde cualquier página */
+    ruta: function (p) { return p ? (/^(https?:|data:|\/)/.test(p) ? p : base + p) : null; }
+  };
+})();
