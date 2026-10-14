@@ -1,0 +1,3 @@
+Carpeta para el logo y las fotos de IDESA.
+Poner aquí los archivos y anotar sus rutas en js/config.js (logo, logoSobreOscuro, fotos y obras).
+Recomendado: fotos en JPG de unos 1600 px de ancho; logo en SVG o PNG con fondo transparente.
