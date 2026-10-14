@@ -79,6 +79,7 @@
   }
   function cerrar(m) {
     m.classList.remove("on"); abierta = null; document.documentElement.style.overflow = ""; barra();
+    document.dispatchEvent(new CustomEvent("idesa:cerrar", { detail: m }));
     if (anterior && anterior.focus) anterior.focus();
   }
   $$(".modal").forEach(function (m) {
@@ -149,8 +150,8 @@
   /* ============ cinta de obras ============ */
   function tileObra(o, i, clase) {
     var t = BYK[o.tipo] || OTRO;
-    if (o.foto) return '<button class="rib tile photo ' + (clase || "") + '" type="button" data-foto="' + i + '" aria-label="Ver foto: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
-    return '<button class="rib tile hue ' + (clase || "") + '" type="button" data-qv="' + t.k + '" style="--g:var(--g' + (i % 5 + 1) + ');animation-delay:' + (-i * 1.3) + 's" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
+    if (o.foto) return '<button class="rib tile photo ' + (clase || "") + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
+    return '<button class="rib tile hue ' + (clase || "") + '" type="button" data-obra="' + i + '" style="--g:var(--g' + (i % 5 + 1) + ');animation-delay:' + (-i * 1.3) + 's" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
   }
   (function () {
     var a = OBRAS.map(function (o, i) { return tileObra(o, i); }).join("");
@@ -181,14 +182,15 @@
     $("#qvCta").onclick = function () { cerrar($("#qv")); abrirSol(k); };
     $("#qvWa").href = wa("Hola IDESA, quiero cotizar: " + t.n + ". Lo vi en su sitio web."); $("#qvWa").target = "_blank"; $("#qvWa").rel = "noopener";
     abrir($("#qv"));
+    document.dispatchEvent(new CustomEvent("idesa:qv", { detail: k }));
   }
 
   /* ============ galería ============ */
   var FORMAS = ["big", "", "tall", "wide", "", "", "wide", "", "tall", ""];
   $("#gallery").innerHTML = OBRAS.map(function (o, i) {
     var t = BYK[o.tipo] || OTRO, forma = FORMAS[i % FORMAS.length];
-    if (o.foto) return '<button class="shot tile photo ' + forma + '" type="button" data-foto="' + i + '" aria-label="Ver foto: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
-    return '<button class="shot tile hue ' + forma + '" type="button" data-qv="' + t.k + '" style="--g:var(--g' + ((i + 2) % 5 + 1) + ')" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
+    if (o.foto) return '<button class="shot tile photo ' + forma + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
+    return '<button class="shot tile hue ' + forma + '" type="button" data-obra="' + i + '" style="--g:var(--g' + ((i + 2) % 5 + 1) + ')" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
   }).join("");
 
   /* ============ visor de fotos ============ */
@@ -473,6 +475,9 @@
     });
     el.addEventListener("pointerleave", function () { el.style.transition = "transform .5s var(--ease)"; el.style.transform = ""; });
   });
+
+  /* utilidades para js/inmersivo.js */
+  window.IDESA_UI = { abrir: abrir, cerrar: cerrar, abrirSol: abrirSol, wa: wa, esc: esc, icono: icono, TIPOS: TIPOS, BYK: BYK, OTRO: OTRO };
 
   irPaso(1); render(); setEtapa(1); alScroll();
 })();

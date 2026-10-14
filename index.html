@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500..900&display=swap">
 <link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/inmersivo.css">
 <script>document.documentElement.classList.add("js")</script>
 <script type="application/ld+json">
 {
@@ -136,7 +137,7 @@
 
 <!-- ============ CINTA DE OBRAS ============ -->
 <section class="ribbon dark-sec" id="obras">
-  <div class="wrap"><div class="head rv"><span class="eyebrow">Obras</span><h2>Así se ve el trabajo</h2><p>Tocá una obra para verla en grande. Más fotos en Instagram: <a class="lnk" data-href="instagram"><span data-neg="instagramUsuario"></span></a></p></div></div>
+  <div class="wrap"><div class="head rv"><span class="eyebrow">Obras</span><h2>Así se ve el trabajo</h2><p>Girá el carrusel y tocá una obra para verla en foto y en maqueta 3D. Más fotos en Instagram: <a class="lnk" data-href="instagram"><span data-neg="instagramUsuario"></span></a></p></div></div>
   <div class="rows" id="ribbon" aria-label="Obras de IDESA"></div>
   <div class="wrap"><p class="demo-note" data-demo>Las tarjetas de marca se reemplazan por las fotos reales de IDESA, con su zona, área y estado.</p></div>
 </section>
@@ -288,6 +289,11 @@
 </div>
 
 <!-- ============ VISTA RÁPIDA DE UN TIPO DE OBRA ============ -->
+<!-- ============ VISOR DE OBRA (se arma en js/inmersivo.js) ============ -->
+<div class="modal" id="ov" role="dialog" aria-modal="true" aria-labelledby="ovTitle">
+  <div class="box ov"></div>
+</div>
+
 <div class="modal" id="qv" role="dialog" aria-modal="true" aria-labelledby="qvTitle">
   <div class="box qv">
     <button class="qv-x" type="button" data-close aria-label="Cerrar"><svg class="ic"><use href="#i-x"/></svg></button>
@@ -376,5 +382,6 @@
 
 <script src="js/config.js"></script>
 <script src="js/app.js"></script>
+<script src="js/inmersivo.js"></script>
 </body>
 </html>
