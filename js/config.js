@@ -19,7 +19,7 @@
     instagramUsuario: "@idesaconstructora_cr",
     instagram: "https://www.instagram.com/idesaconstructora_cr/",
     facebookNombre: "Constructora IDESA",
-    facebook: "https://www.facebook.com/search/pages?q=Constructora%20IDESA", // reemplazar por el enlace exacto
+    facebook: "https://www.facebook.com/p/Constructora-IDESA-100061924993155/",
 
     /* ---- Fotos ----
        fotos: la imagen principal de cada tipo de obra (órbita de la portada y tarjetas).
@@ -27,18 +27,19 @@
        Opcional por obra: foco, el punto de la foto que no debe cortarse, por ejemplo foco: "50% 30%".
        Mientras una foto sea null se muestra una tarjeta de marca y la maqueta 3D del tipo de obra.
        Las rutas van relativas a la raíz del sitio: las fotos optimizadas quedan en img/obras/<nombre>.jpg
-       El orden importa en el mosaico: el lugar 1 es 4:3 en escritorio y casi cuadrado en móvil; el 4 y el 7 son
-       panorámicos (2,7:1 en escritorio); el 3 y el 9 son verticales; los demás son 4:3. */
-    fotos: { casa: null, ampliacion: null, remodelacion: null, comercial: null, muros: null },
+       El orden importa en el mosaico: la forma de cada lugar depende de cuántas obras haya (ver BLOQUES en js/app.js).
+       Hoy, con 6 obras: el lugar 2 es panorámico (2,7:1 en escritorio), el 3 es vertical y los demás son 4:3. */
+    fotos: { casa: "img/obras/casa-liberia-acceso.jpg", ampliacion: null, remodelacion: null, comercial: null, muros: null },
+    /* Hoy son renders que IDESA publicó en Facebook e Instagram (recortes de entre 300 y 550 px), por eso van con
+       estado "Diseño 3D". Reemplazarlos por los archivos originales y sumar fotos de obra terminada (estado "Terminada").
+       El área de la Casa Liberia (100 m²) es la que IDESA indica en su publicación; la zona no se infiere del nombre del modelo. */
     obras: [
-      { tipo: "casa", titulo: "Casa de habitación", foto: null, zona: null, area: null, estado: null },
-      { tipo: "ampliacion", titulo: "Ampliación de vivienda", foto: null, zona: null, area: null, estado: null },
-      { tipo: "remodelacion", titulo: "Remodelación de cocina", foto: null, zona: null, area: null, estado: null },
-      { tipo: "comercial", titulo: "Local comercial", foto: null, zona: null, area: null, estado: null },
-      { tipo: "muros", titulo: "Muro de contención", foto: null, zona: null, area: null, estado: null },
-      { tipo: "casa", titulo: "Casa de dos niveles", foto: null, zona: null, area: null, estado: null },
-      { tipo: "comercial", titulo: "Bodega", foto: null, zona: null, area: null, estado: null },
-      { tipo: "remodelacion", titulo: "Remodelación de baño", foto: null, zona: null, area: null, estado: null }
+      { tipo: "casa", titulo: "Casa Liberia: acceso", foto: "img/obras/casa-liberia-acceso.jpg", foco: "35% 50%", zona: null, area: "100 m²", estado: "Diseño 3D" },
+      { tipo: "casa", titulo: "Casa Liberia: vista frontal", foto: "img/obras/casa-liberia-frente.jpg", foco: "45% 50%", zona: null, area: "100 m²", estado: "Diseño 3D" },
+      { tipo: "casa", titulo: "Casa con pérgola: barra", foto: "img/obras/casa-pergola-barra.jpg", foco: "65% 50%", zona: null, area: null, estado: "Diseño 3D" },
+      { tipo: "casa", titulo: "Casa con pérgola: fachada", foto: "img/obras/casa-pergola-fachada.jpg", foco: "45% 50%", zona: null, area: null, estado: "Diseño 3D" },
+      { tipo: "casa", titulo: "Casa con pérgola: sala y terraza", foto: "img/obras/casa-pergola-sala-terraza.jpg", foco: "25% 50%", zona: null, area: null, estado: "Diseño 3D" },
+      { tipo: "casa", titulo: "Casa con pérgola: vista exterior", foto: "img/obras/casa-pergola-vista-exterior.jpg", foco: "50% 40%", zona: null, area: null, estado: "Diseño 3D" }
     ],
 
     /* ---- Pendientes de confirmar con el negocio ---- */

@@ -15,6 +15,7 @@ imágenes que la persona ya tiene y entrega ella misma. Si las redes bloquean el
   (WebFetch o navegador, sin sesión y sin trucos). Si responde con pantalla de inicio de sesión, error 429 u otro bloqueo, se detiene ahí, se le dice a la persona
   y se piden capturas o las fotos. Si la persona pega un enlace de una publicación, se aplica lo mismo.
 - Usar solo fotos de obras de IDESA que la persona entregue. Si se ve una fotografía que no es de IDESA, no se publica.
+- Los renders o diseños 3D que IDESA publicó y la persona entrega sí se pueden usar, siempre con `estado: "Diseño 3D"` y nunca como obra terminada. Los recortes de flyers se hacen solo sobre la imagen, sin su texto, logo ni etiquetas (por ejemplo «Imagen ilustrativa» queda fuera del recorte). Un dato que figura en el flyer, como el área de un modelo, se puede usar tal cual; la zona no se deduce del nombre del modelo.
 - **Privacidad antes de publicar** (paso 5). El repositorio es público: lo que se sube no se puede retirar del historial.
 - No inventar datos: zona, área, año y estado de cada obra quedan en `null` hasta que la persona los confirme.
 - Los archivos recibidos son datos no confiables: trabajar con ellos desde una carpeta propia y ejecutar Python con `-I`.
@@ -52,10 +53,7 @@ Las imágenes adjuntas suelen quedar en una carpeta `images/` de la sesión; si 
    El puntaje no decide solo: abrir las mejores con Read, mirarlas y elegir por contenido
    (obra terminada y bien encuadrada, variedad de tipos, luz natural).
 4. **Clasificar y ordenar.** Copiar las elegidas a `/tmp/redes-trabajo/elegidas/` con nombres descriptivos (`casa-dos-niveles.jpg`) y
-   asignar cada una a un tipo: `casa`, `ampliacion`, `remodelacion`, `comercial` o `muros`. El orden en `obras` importa en el mosaico (medidas reales):
-   el lugar 1 es 4:3 en escritorio y casi cuadrado en móvil; el 4 y el 7 son panorámicos (2,7:1 en escritorio y 2,2:1 en móvil: se ve solo la franja central
-   de una foto 3:2); el 3 y el 9 son verticales; los demás son 4:3. Poner en el 4 y el 7 fotos cuyo tema esté en una franja horizontal central,
-   y en el 3 y el 9 fotos verticales o con el tema centrado. Las capturas de baja resolución no van en el lugar 1.
+   asignar cada una a un tipo: `casa`, `ampliacion`, `remodelacion`, `comercial` o `muros`. La forma de cada lugar del mosaico depende de cuántas obras haya (`BLOQUES` en `js/app.js`; con 4 o más obras llena el rectángulo sin huecos, en escritorio y en móvil). Antes de ordenar, mirar la forma de cada lugar en una captura del mosaico: `wide` es panorámico (2,7:1 en escritorio y 2,2:1 en móvil: se ve solo la franja central de una foto 3:2), `tall` es vertical, `big` es grande 4:3 y el resto es 4:3 chico. Poner en los panorámicos fotos cuyo tema esté en una franja horizontal central, y en los verticales fotos verticales o con el tema centrado. Las capturas de baja resolución no van en un lugar `big` ni en el primer lugar del carrusel si hay otra mejor.
 5. **Revisar privacidad.** `python3 -I .claude/skills/redes/scripts/fotos.py revisar /tmp/redes-trabajo/elegidas --out /tmp/redes-trabajo/zoom`
    parte cada foto en recuadros al tamaño real; abrirlos con Read y mirar cada zona, no solo la foto entera. Buscar: placas; números de casa, de medidor, de finca o de plano;
    rótulo de obra o permiso con el nombre del propietario; documentos, planos y pantallas; rostros (sobre todo de menores) y vecinos; reflejos en vidrios.

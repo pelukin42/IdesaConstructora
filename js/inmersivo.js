@@ -593,7 +593,7 @@
       if (!foto) b.style.setProperty("--g", "var(--g" + (x.i % 5 + 1) + ")");
       b.innerHTML = (foto ? '<img src="' + esc(foto) + '" alt="" loading="lazy"' + enfoque(o) + '>' : U.icono(t.k)) +
         '<span class="b3d">' + ico("cubo") + "3D</span>" +
-        '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span>";
+        '<span class="tt"><small>' + esc(U.etiqueta(o, t)) + "</small>" + esc(o.titulo) + "</span>";
       if (j >= OBRAS.length) { b.tabIndex = -1; b.setAttribute("aria-hidden", "true"); } /* copias que solo rellenan el anillo: no repetir paradas de Tab */
       spin.appendChild(b); cards.push(b);
       b.addEventListener("focus", function () { ir(j); });
@@ -616,7 +616,7 @@
       }
       if (bi !== frente) {
         frente = bi; var o = lista[bi].o, t = U.BYK[o.tipo] || U.OTRO;
-        $("#r3dT").textContent = o.titulo; $("#r3dS").textContent = t.n + " · tocá para verla en 3D";
+        $("#r3dT").textContent = o.titulo; $("#r3dS").textContent = U.etiqueta(o, t) + " · tocá para abrirla";
       }
     }
     function bucle(t) {

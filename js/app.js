@@ -35,6 +35,8 @@
   var fotoTipo = function (k) { return N.ruta(N.fotos && N.fotos[k]); };
   var OBRAS = (N.obras || []).map(function (o) { return { tipo: o.tipo, titulo: o.titulo, foto: N.ruta(o.foto), foco: o.foco || null, zona: o.zona, area: o.area, estado: o.estado }; });
   var enfoque = function (o) { return o.foco ? ' style="object-position:' + esc(o.foco) + '"' : ""; };
+  /* rótulo de cada obra: el tipo y, si se indicó, su estado («Diseño 3D» para renders, «Terminada» para fotos de obra) */
+  var etiqueta = function (o, t) { return t.n + (o.estado ? " · " + o.estado : ""); };
   var icono = function (k) { return '<svg class="ic"><use href="#i-' + (k === "otro" ? "doc" : k) + '"/></svg>'; };
 
   /* ============ datos del negocio en la página ============ */
@@ -151,8 +153,8 @@
   /* ============ cinta de obras ============ */
   function tileObra(o, i, clase) {
     var t = BYK[o.tipo] || OTRO;
-    if (o.foto) return '<button class="rib tile photo ' + (clase || "") + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"' + enfoque(o) + '><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
-    return '<button class="rib tile hue ' + (clase || "") + '" type="button" data-obra="' + i + '" style="--g:var(--g' + (i % 5 + 1) + ');animation-delay:' + (-i * 1.3) + 's" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
+    if (o.foto) return '<button class="rib tile photo ' + (clase || "") + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"' + enfoque(o) + '><span class="tt"><small>' + esc(etiqueta(o, t)) + "</small>" + esc(o.titulo) + "</span></button>";
+    return '<button class="rib tile hue ' + (clase || "") + '" type="button" data-obra="' + i + '" style="--g:var(--g' + (i % 5 + 1) + ');animation-delay:' + (-i * 1.3) + 's" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(etiqueta(o, t)) + "</small>" + esc(o.titulo) + "</span></button>";
   }
   (function () {
     var a = OBRAS.map(function (o, i) { return tileObra(o, i); }).join("");
@@ -187,15 +189,28 @@
   }
 
   /* ============ galería ============ */
-  var FORMAS = ["big", "", "tall", "wide", "", "", "wide", "", "tall", ""];
+  /* Formas del mosaico (big 2x2, tall 1x2, wide 2x1, vacío 1x1). Cada bloque llena un rectángulo de 4 columnas sin dejar
+     huecos, también en 2 columnas; el patrón se arma según cuántas obras haya. Con menos de 4 quedan todas iguales. */
+  var BLOQUES = {
+    4: ["big", "", "tall", ""],
+    5: ["big", "", "", "", ""],
+    6: ["", "wide", "tall", "", "", ""],
+    7: ["big", "", "tall", "", "wide", "", ""],
+    8: ["big", "", "tall", "", "", "", "", ""]
+  };
+  var FORMAS = (function (n) {
+    var f = [];
+    while (n > 8) { f = f.concat(BLOQUES[4]); n -= 4; }
+    return f.concat(BLOQUES[n] || []);
+  })(OBRAS.length);
   $("#gallery").innerHTML = OBRAS.map(function (o, i) {
-    var t = BYK[o.tipo] || OTRO, forma = FORMAS[i % FORMAS.length];
-    if (o.foto) return '<button class="shot tile photo ' + forma + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"' + enfoque(o) + '><span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
-    return '<button class="shot tile hue ' + forma + '" type="button" data-obra="' + i + '" style="--g:var(--g' + ((i + 2) % 5 + 1) + ')" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(t.n) + "</small>" + esc(o.titulo) + "</span></button>";
+    var t = BYK[o.tipo] || OTRO, forma = FORMAS[i] || "";
+    if (o.foto) return '<button class="shot tile photo ' + forma + '" type="button" data-obra="' + i + '" aria-label="Ver obra: ' + esc(o.titulo) + '"><img src="' + esc(o.foto) + '" alt="' + esc(o.titulo) + '" loading="lazy"' + enfoque(o) + '><span class="tt"><small>' + esc(etiqueta(o, t)) + "</small>" + esc(o.titulo) + "</span></button>";
+    return '<button class="shot tile hue ' + forma + '" type="button" data-obra="' + i + '" style="--g:var(--g' + ((i + 2) % 5 + 1) + ')" aria-label="' + esc(o.titulo) + '">' + icono(t.k) + '<span class="tt"><small>' + esc(etiqueta(o, t)) + "</small>" + esc(o.titulo) + "</span></button>";
   }).join("");
 
   /* ============ visor de fotos ============ */
-  var lbLista = OBRAS.map(function (o, i) { return { i: i, src: o.foto, t: o.titulo }; }).filter(function (x) { return x.src; }), lbPos = 0;
+  var lbLista = OBRAS.map(function (o, i) { return { i: i, src: o.foto, t: o.titulo + (o.estado ? " · " + o.estado : "") }; }).filter(function (x) { return x.src; }), lbPos = 0;
   function pintarLb() { var x = lbLista[lbPos]; $("#lbImg").src = x.src; $("#lbImg").alt = x.t; $("#lbCap").textContent = x.t; }
   function abrirLb(i) {
     var p = lbLista.findIndex(function (x) { return x.i === i; }); if (p < 0) return;
@@ -478,7 +493,7 @@
   });
 
   /* utilidades para js/inmersivo.js */
-  window.IDESA_UI = { abrir: abrir, cerrar: cerrar, abrirSol: abrirSol, wa: wa, esc: esc, icono: icono, TIPOS: TIPOS, BYK: BYK, OTRO: OTRO };
+  window.IDESA_UI = { abrir: abrir, cerrar: cerrar, abrirSol: abrirSol, wa: wa, esc: esc, icono: icono, etiqueta: etiqueta, TIPOS: TIPOS, BYK: BYK, OTRO: OTRO };
 
   irPaso(1); render(); setEtapa(1); alScroll();
 })();
